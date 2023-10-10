@@ -1,0 +1,50 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "codigo": "042LB",
+      "photo": "https://m.media-amazon.com/images/I/71FuI8YvCNL.__AC_SX300_SY300_QL70_FMwebp_.jpg",
+      "name": "alguma coisa",
+      "categoria": "Telefone",
+      "quantidade": 5,
+      "preco": 1244,
+      "tamanho": "LX, XL"
+    },{
+      "id": 1,
+      "codigo": "042LB",
+      "photo": "https://m.media-amazon.com/images/I/71FuI8YvCNL.__AC_SX300_SY300_QL70_FMwebp_.jpg",
+      "name": "alguma coisa",
+      "categoria": "Telefone",
+      "quantidade": 5,
+      "preco": 1244,
+      "tamanho": "LX, XL"
+    },{
+      "id": 1,
+      "codigo": "042LB",
+      "photo": "https://m.media-amazon.com/images/I/71FuI8YvCNL.__AC_SX300_SY300_QL70_FMwebp_.jpg",
+      "name": "alguma coisa",
+      "categoria": "Telefone",
+      "quantidade": 5,
+      "preco": 1244,
+      "tamanho": "LX, XL"
+    },{
+      "id": 1,
+      "codigo": "042LB",
+      "photo": "https://m.media-amazon.com/images/I/71FuI8YvCNL.__AC_SX300_SY300_QL70_FMwebp_.jpg",
+      "name": "alguma coisa",
+      "categoria": "Telefone",
+      "quantidade": 0,
+      "preco": 1244,
+      "tamanho": "LX, XL"
+    },{
+      "id": 1,
+      "codigo": "042LB",
+      "photo": "https://m.media-amazon.com/images/I/71FuI8YvCNL.__AC_SX300_SY300_QL70_FMwebp_.jpg",
+      "name": "alguma coisa",
+      "categoria": "Telefone",
+      "quantidade": 1,
+      "preco": 1244,
+      "tamanho": "LX, XL"
+    }
+  ]
+}

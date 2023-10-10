@@ -1,0 +1,91 @@
+@import "./../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "./auth.scss";
+@import "./menu.scss";
+@import "./table.scss";
+
+@font-face {
+  font-family: CircularStdBook;
+  src: url(./../assets/fonts/CircularStdBook.ttf);
+}
+body{
+  font-family: CircularStdBook;
+  background: #f7f7f7b7;
+  /*background: rgb(252,253,242);
+  background: linear-gradient(155deg, #fff 0%, #fffdf6 50%, #ECF9FF 100%);*/
+}
+.card{
+  border: none !important;
+  border-radius: 10px;
+  font-size: 14px;
+  h6{
+   font-size: 15px;
+   margin-bottom: 0px;
+   opacity: 0.6;
+  }
+  .icon-card{
+   font-size: 23px !important;
+   opacity: 0.9;
+  }
+}
+.w-100{
+  width: 100%;
+}
+.h-100{
+  min-height: 100vh;
+}
+.card{
+  border-radius: 15px;
+  border: none;
+  .span-icon{
+    margin-top: -7px;
+  }
+}
+.font-14{
+  font-size: 14px;
+}
+.font-25{
+  font-size: 25px;
+}
+.input-group{
+  width: 220px;
+  span{
+    border: none !important;
+    background: #fff !important;
+  }
+  input{
+    font-size: 14px !important;
+    border: none;
+    background: #fff;
+    box-shadow: none !important;
+  }
+  select{
+    font-size: 14px !important;
+    border: none;
+    background: #fff;
+    box-shadow: none !important;
+  }
+}
+.user-menu{
+  margin-top: 14px;
+  .avatar{
+    img{
+      width: 35px;
+      border-radius: 10px;
+    }
+  }
+  .name{
+    font-size: 13px;
+    h6{
+      font-size: 14.5px;
+      margin-bottom: -1px;
+    }
+    span{
+      opacity: 0.5;
+    }
+  }
+}
+.loading{
+  width: 100%;
+  position: absolute;
+  height: 50vh;
+}
