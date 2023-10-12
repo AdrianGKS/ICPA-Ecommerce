@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.models.dtos.TokenDto;
-import com.api.ICPAEcommerce.domain.models.dtos.UserAuthenticationDTO;
+import com.api.ICPAEcommerce.domain.dtos.TokenDto;
+import com.api.ICPAEcommerce.domain.dtos.UserAuthenticationDTO;
 import com.api.ICPAEcommerce.infra.security.SecurityToken;
 import com.api.ICPAEcommerce.domain.models.User;
 import jakarta.validation.Valid;

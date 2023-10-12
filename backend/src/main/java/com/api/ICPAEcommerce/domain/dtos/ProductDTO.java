@@ -1,6 +1,6 @@
-package com.api.ICPAEcommerce.domain.models.dtos;
+package com.api.ICPAEcommerce.domain.dtos;
 
-import com.api.ICPAEcommerce.domain.models.enums.EnumProductCategory;
+import com.api.ICPAEcommerce.domain.enums.EnumProductCategory;
 import com.api.ICPAEcommerce.domain.models.Image;
 import com.api.ICPAEcommerce.domain.models.Product;
 import jakarta.validation.Valid;

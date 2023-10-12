@@ -1,8 +1,8 @@
 package com.api.ICPAEcommerce.domain.models;
 
-import com.api.ICPAEcommerce.domain.models.dtos.ImageDTO;
-import com.api.ICPAEcommerce.domain.models.dtos.ProductDTO;
-import com.api.ICPAEcommerce.domain.models.enums.EnumProductCategory;
+import com.api.ICPAEcommerce.domain.dtos.ImageDTO;
+import com.api.ICPAEcommerce.domain.dtos.ProductDTO;
+import com.api.ICPAEcommerce.domain.enums.EnumProductCategory;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.HashSet;

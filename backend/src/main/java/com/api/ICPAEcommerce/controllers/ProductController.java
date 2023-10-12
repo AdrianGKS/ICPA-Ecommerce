@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.models.dtos.ProductDTO;
+import com.api.ICPAEcommerce.domain.dtos.ProductDTO;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import com.api.ICPAEcommerce.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

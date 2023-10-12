@@ -1,4 +1,4 @@
-package com.api.ICPAEcommerce.domain.models.dtos;
+package com.api.ICPAEcommerce.domain.dtos;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;

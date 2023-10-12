@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.domain.models;
 
-import com.api.ICPAEcommerce.domain.models.dtos.AddressDTO;
+import com.api.ICPAEcommerce.domain.dtos.AddressDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.api.ICPAEcommerce.domain.models.enums;
+package com.api.ICPAEcommerce.domain.enums;
 
 public enum EnumUserProfile {
 

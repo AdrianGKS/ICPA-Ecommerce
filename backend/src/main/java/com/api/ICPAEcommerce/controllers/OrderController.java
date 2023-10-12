@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.models.dtos.OrderDTO;
+import com.api.ICPAEcommerce.domain.dtos.OrderDTO;
 import com.api.ICPAEcommerce.repositories.OrderRepository;
 import com.api.ICPAEcommerce.services.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

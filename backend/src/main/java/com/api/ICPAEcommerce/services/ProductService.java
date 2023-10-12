@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.models.Product;
-import com.api.ICPAEcommerce.domain.models.dtos.ProductDTO;
+import com.api.ICPAEcommerce.domain.dtos.ProductDTO;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;

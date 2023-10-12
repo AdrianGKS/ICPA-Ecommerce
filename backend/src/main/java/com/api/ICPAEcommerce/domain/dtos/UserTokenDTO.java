@@ -1,4 +1,4 @@
-package com.api.ICPAEcommerce.domain.models.dtos;
+package com.api.ICPAEcommerce.domain.dtos;
 
 import com.api.ICPAEcommerce.domain.models.User;
 import org.springframework.http.ResponseEntity;

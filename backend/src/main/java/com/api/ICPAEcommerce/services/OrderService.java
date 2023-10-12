@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.models.dtos.OrderDTO;
+import com.api.ICPAEcommerce.domain.dtos.OrderDTO;
 import com.api.ICPAEcommerce.domain.models.Order;
 import com.api.ICPAEcommerce.repositories.OrderRepository;
 import lombok.AllArgsConstructor;

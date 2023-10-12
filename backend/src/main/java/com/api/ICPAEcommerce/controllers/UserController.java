@@ -1,10 +1,10 @@
 package com.api.ICPAEcommerce.controllers;
 
 import com.api.ICPAEcommerce.domain.models.User;
-import com.api.ICPAEcommerce.domain.models.dtos.UserChangePasswordDTO;
-import com.api.ICPAEcommerce.domain.models.dtos.UserDTO;
-import com.api.ICPAEcommerce.domain.models.dtos.UserRecoverPasswordDTO;
-import com.api.ICPAEcommerce.domain.models.dtos.UserTokenDTO;
+import com.api.ICPAEcommerce.domain.dtos.UserChangePasswordDTO;
+import com.api.ICPAEcommerce.domain.dtos.UserDTO;
+import com.api.ICPAEcommerce.domain.dtos.UserRecoverPasswordDTO;
+import com.api.ICPAEcommerce.domain.dtos.UserTokenDTO;
 import com.api.ICPAEcommerce.infra.security.SecurityToken;
 import com.api.ICPAEcommerce.repositories.TokenRepository;
 import com.api.ICPAEcommerce.repositories.UserRepository;

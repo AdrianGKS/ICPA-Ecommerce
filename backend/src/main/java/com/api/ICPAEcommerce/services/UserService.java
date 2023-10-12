@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.models.dtos.UserDTO;
-import com.api.ICPAEcommerce.domain.models.dtos.UserRecoverPasswordDTO;
+import com.api.ICPAEcommerce.domain.dtos.UserDTO;
+import com.api.ICPAEcommerce.domain.dtos.UserRecoverPasswordDTO;
 import com.api.ICPAEcommerce.domain.models.Token;
 import com.api.ICPAEcommerce.domain.models.User;
 import com.api.ICPAEcommerce.repositories.TokenRepository;

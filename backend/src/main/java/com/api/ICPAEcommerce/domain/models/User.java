@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.domain.models;
 
-import com.api.ICPAEcommerce.domain.models.dtos.UserDTO;
-import com.api.ICPAEcommerce.domain.models.enums.EnumUserProfile;
+import com.api.ICPAEcommerce.domain.dtos.UserDTO;
+import com.api.ICPAEcommerce.domain.enums.EnumUserProfile;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;

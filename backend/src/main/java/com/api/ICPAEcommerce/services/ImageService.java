@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.models.Product;
-import com.api.ICPAEcommerce.domain.models.dtos.ImageDTO;
+import com.api.ICPAEcommerce.domain.dtos.ImageDTO;
 import com.api.ICPAEcommerce.domain.models.Image;
 import com.api.ICPAEcommerce.repositories.ImageRepository;
 import com.api.ICPAEcommerce.repositories.ProductRepository;

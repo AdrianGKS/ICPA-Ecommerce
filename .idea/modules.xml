@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/icpa-ecommerce-develop.iml" filepath="$PROJECT_DIR$/.idea/icpa-ecommerce-develop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/backend/ICPA-Ecommerce.iml" filepath="$PROJECT_DIR$/backend/ICPA-Ecommerce.iml" />
     </modules>
   </component>
 </project>
