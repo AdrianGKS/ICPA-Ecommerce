@@ -51,7 +51,7 @@ public class UserController {
         var findUserByEmail = userRepository.findByEmailIgnoreCase(userDTO.email());
 
         if (!findUserByEmail.isEmpty()) {
-            return ResponseEntity.ok("E-mail já cadastrado");
+            return ResponseEntity.badRequest().body("E-mail já cadastrado");
         }
 
         var newUser = userService.saveUser(userDTO);
@@ -74,37 +74,6 @@ public class UserController {
         }
 
         return ResponseEntity.ok(userTokenDTO);
-    }
-
-    @PostMapping("/recover-password")
-    public ResponseEntity recoverPassword(@RequestBody @Valid UserRecoverPasswordDTO userRecoverPasswordDTO) {
-        var user = userRepository.findByEmailIgnoreCase(userRecoverPasswordDTO.email());
-
-        if(user.isEmpty()) {
-            return ResponseEntity.ok().body("Usuário não existe para o e-mail informado!");
-        }
-
-        var tokenUser = userService.generateLinkToUpdatePassword(userRecoverPasswordDTO);
-
-        String link = "recover-password/" + tokenUser;
-        String receiver = userRecoverPasswordDTO.email();
-        String subject = "Solicitação de Alteração de Senha";
-        String name = user.get().getName();
-
-        try {
-            resetPasswordService.sendEmailResetPassword(receiver, subject, name, link);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-
-        return ResponseEntity.ok().body("E-mail enviado com sucesso!");
-    }
-
-    @PostMapping("/update-password/{token}")
-    public ResponseEntity updatePassword(@PathVariable String token, @RequestBody @Valid UserChangePasswordDTO userChangePasswordDTO) {
-        var updatePassword = userService.updatePassword(token, userChangePasswordDTO.password());
-
-        return ResponseEntity.ok().body(updatePassword);
     }
 
     @GetMapping("/list-users")
@@ -138,6 +107,37 @@ public class UserController {
         userService.deleteUser(id);
 
         return ResponseEntity.ok("Usuário excluído com sucesso!");
+    }
+
+    @PostMapping("/recover-password")
+    public ResponseEntity recoverPassword(@RequestBody @Valid UserRecoverPasswordDTO userRecoverPasswordDTO) {
+        var user = userRepository.findByEmailIgnoreCase(userRecoverPasswordDTO.email());
+
+        if(user.isEmpty()) {
+            return ResponseEntity.ok().body("Usuário não existe para o e-mail informado!");
+        }
+
+        var tokenUser = userService.generateLinkToUpdatePassword(userRecoverPasswordDTO);
+
+        String link = "recover-password/" + tokenUser;
+        String receiver = userRecoverPasswordDTO.email();
+        String subject = "Solicitação de Alteração de Senha";
+        String name = user.get().getName();
+
+        try {
+            resetPasswordService.sendEmailResetPassword(receiver, subject, name, link);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.ok().body("E-mail enviado com sucesso!");
+    }
+
+    @PostMapping("/update-password/{token}")
+    public ResponseEntity updatePassword(@PathVariable String token, @RequestBody @Valid UserChangePasswordDTO userChangePasswordDTO) {
+        var updatePassword = userService.updatePassword(token, userChangePasswordDTO.password());
+
+        return ResponseEntity.ok().body(updatePassword);
     }
 
 }

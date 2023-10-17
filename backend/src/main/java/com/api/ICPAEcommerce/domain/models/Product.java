@@ -26,8 +26,12 @@ public class Product {
     private Double price;
     private Integer quantity;
     private EnumProductCategory enumProductCategory;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     private Set<Image> images = new HashSet<>();
+
+    @ManyToOne
+    private Order order;
 
     public Product(ProductDTO productDTO) {
         this.code = productDTO.getCode();
@@ -35,13 +39,7 @@ public class Product {
         this.description = productDTO.getDescription();
 
         if (productDTO.getImage() != null && !productDTO.getImage().isEmpty()) {
-
-            for (ImageDTO imageDTO : productDTO.getImage()) {
-
-                Image image = new Image(imageDTO);
-                image.setProduct(this);
-                this.images.add(image);
-            }
+            productDTO.getImage().stream().map(Image::new).forEach(this::accept);
         }
 
         this.price = productDTO.getPrice();
@@ -69,6 +67,10 @@ public class Product {
         if (productDTO.getEnumProductCategory() != null) {
             this.enumProductCategory = productDTO.getEnumProductCategory();
         }
+    }
 
+    private void accept(Image image) {
+        image.setProduct(this);
+        this.images.add(image);
     }
 }

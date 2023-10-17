@@ -21,7 +21,8 @@ public class Token {
     private OffsetDateTime created;
     private OffsetDateTime expires;
     private OffsetDateTime confirmed;
-    @ManyToOne
+
+    @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
 }

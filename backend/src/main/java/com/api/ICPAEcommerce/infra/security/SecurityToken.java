@@ -19,7 +19,6 @@ public class SecurityToken {
     private String secret;
 
     public String generateToken(User user) {
-
         try {
             var algorithm = Algorithm.HMAC256(secret);
 

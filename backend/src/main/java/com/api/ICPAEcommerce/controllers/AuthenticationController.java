@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/login")
 public class AuthenticationController {
 
     @Autowired
@@ -26,10 +26,16 @@ public class AuthenticationController {
 
     @PostMapping("/authentication")
     public ResponseEntity authenticateUser(@RequestBody @Valid UserAuthenticationDTO userAuthenticationDTO) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(userAuthenticationDTO.email(), userAuthenticationDTO.password());
-        var authentication = manager.authenticate(authenticationToken);
-        var tokenJWT = securityToken.generateToken((User)authentication.getPrincipal());
+        try {
+            var authenticationToken = new UsernamePasswordAuthenticationToken(userAuthenticationDTO.email(), userAuthenticationDTO.password());
+            var authentication = manager.authenticate(authenticationToken);
+            var tokenJWT = securityToken.generateToken((User)authentication.getPrincipal());
 
-        return ResponseEntity.ok(new TokenDto(tokenJWT));
+            return ResponseEntity.ok(new TokenDto(tokenJWT));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 }

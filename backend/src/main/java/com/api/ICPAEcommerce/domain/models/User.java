@@ -29,23 +29,32 @@ public class User implements UserDetails {
     private String name;
     private String email;
     private String password;
-    @Embedded
-    private Address address;
-    private EnumUserProfile profile = EnumUserProfile.USER;
-    private Boolean confirmation = false;
+    private EnumUserProfile profile;
     private OffsetDateTime creationDate;
     private OffsetDateTime updateDate;
+
+    @Embedded
+    private Address address;
+
+    @OneToOne
+    private Token token;
 
     public User(UserDTO userDTO) {
         this.name = userDTO.name();
         this.email = userDTO.email();
         this.password = userDTO.password();
         this.address = new Address(userDTO.address());
+        this.profile = EnumUserProfile.valueOf(userDTO.profile());
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(profile.name()));
+        if (this.profile == EnumUserProfile.ROLE_ADMIN)
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_USER"));
+        else
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
