@@ -28,7 +28,7 @@ public class SecurityToken {
                     .withExpiresAt(expirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException exception){
-            throw new RuntimeException("Erro ao gerar token jwt", exception);
+            throw new RuntimeException("Erro ao gerar token", exception);
         }
     }
 

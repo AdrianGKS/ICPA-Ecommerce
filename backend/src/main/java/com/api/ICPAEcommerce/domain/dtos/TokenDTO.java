@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.domain.dtos;
 
-public record TokenDto(
+public record TokenDTO(
         String token
 ) {
 }

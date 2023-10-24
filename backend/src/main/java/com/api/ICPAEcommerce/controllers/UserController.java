@@ -1,12 +1,9 @@
 package com.api.ICPAEcommerce.controllers;
 
 import com.api.ICPAEcommerce.domain.models.User;
-import com.api.ICPAEcommerce.domain.dtos.UserChangePasswordDTO;
 import com.api.ICPAEcommerce.domain.dtos.UserDTO;
-import com.api.ICPAEcommerce.domain.dtos.UserRecoverPasswordDTO;
 import com.api.ICPAEcommerce.domain.dtos.UserTokenDTO;
 import com.api.ICPAEcommerce.infra.security.SecurityToken;
-import com.api.ICPAEcommerce.repositories.TokenRepository;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import com.api.ICPAEcommerce.services.RegisterEmailService;
 import com.api.ICPAEcommerce.services.ResetPasswordService;
@@ -36,9 +33,6 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private TokenRepository tokenRepository;
 
     @Autowired
     private RegisterEmailService registerEmailService;
@@ -109,7 +103,7 @@ public class UserController {
         return ResponseEntity.ok("Usuário excluído com sucesso!");
     }
 
-    @PostMapping("/recover-password")
+   /* @PostMapping("/recover-password")
     public ResponseEntity recoverPassword(@RequestBody @Valid UserRecoverPasswordDTO userRecoverPasswordDTO) {
         var user = userRepository.findByEmailIgnoreCase(userRecoverPasswordDTO.email());
 
@@ -133,11 +127,12 @@ public class UserController {
         return ResponseEntity.ok().body("E-mail enviado com sucesso!");
     }
 
+
     @PostMapping("/update-password/{token}")
     public ResponseEntity updatePassword(@PathVariable String token, @RequestBody @Valid UserChangePasswordDTO userChangePasswordDTO) {
         var updatePassword = userService.updatePassword(token, userChangePasswordDTO.password());
 
         return ResponseEntity.ok().body(updatePassword);
     }
-
+*/
 }

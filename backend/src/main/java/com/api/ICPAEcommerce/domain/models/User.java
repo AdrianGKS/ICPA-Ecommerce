@@ -30,14 +30,10 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private EnumUserProfile profile;
-    private OffsetDateTime creationDate;
-    private OffsetDateTime updateDate;
 
     @Embedded
     private Address address;
 
-    @OneToOne
-    private Token token;
 
     public User(UserDTO userDTO) {
         this.name = userDTO.name();
@@ -47,19 +43,20 @@ public class User implements UserDetails {
         this.profile = EnumUserProfile.valueOf(userDTO.profile());
     }
 
+    public User(String email, String password, EnumUserProfile role) {
+        this.email =  email;
+        this.password = password;
+        this.profile = role;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.profile == EnumUserProfile.ROLE_ADMIN)
+        if (this.profile == EnumUserProfile.ADMIN)
             return List.of(
                     new SimpleGrantedAuthority("ROLE_ADMIN"),
                     new SimpleGrantedAuthority("ROLE_USER"));
         else
             return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
     }
 
     @Override
