@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,17 +34,16 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public ResponseEntity saveUser(UserDTO userDTO) {
-        var findUserByEmail = userRepository.findByEmailIgnoreCase(userDTO.email());
 
-        if (!findUserByEmail.isEmpty()) {
-            return ResponseEntity.ok("E-mail já cadastrado");
+        if(this.userRepository.findByEmail(userDTO.email()) != null) {
+            return ResponseEntity.badRequest().build();
         }
 
-        User user = new User(userDTO);
+        var encryptedPassword = new BCryptPasswordEncoder().encode(userDTO.password());
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User newUser =  new User(userDTO.name(), userDTO.email(), encryptedPassword, userDTO.address(), userDTO.profile());
 
-        var newUser = userRepository.save(user);
+        this.userRepository.save(newUser);
 
         return ResponseEntity.ok(newUser);
     }

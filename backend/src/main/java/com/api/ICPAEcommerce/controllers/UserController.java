@@ -40,7 +40,7 @@ public class UserController {
     @Autowired
     private ResetPasswordService resetPasswordService;
 
-    @PostMapping("/create-user")
+   /* @PostMapping("/create-user")
     public ResponseEntity createUser(@RequestBody @Valid UserDTO userDTO) {
         var findUserByEmail = userRepository.findByEmailIgnoreCase(userDTO.email());
 
@@ -53,6 +53,8 @@ public class UserController {
         var authenticationToken = new UsernamePasswordAuthenticationToken(userDTO.email(), userDTO.password());
         var authentication = manager.authenticate(authenticationToken);
         var tokenJWT = securityToken.generateToken((User) authentication.getPrincipal());
+
+/// envio de token por email
 
         UserTokenDTO userTokenDTO = new UserTokenDTO(newUser, tokenJWT);
 
@@ -68,7 +70,7 @@ public class UserController {
         }
 
         return ResponseEntity.ok(userTokenDTO);
-    }
+    }*/
 
     @GetMapping("/list-users")
     @ResponseBody

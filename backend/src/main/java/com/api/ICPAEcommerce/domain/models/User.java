@@ -1,15 +1,16 @@
 package com.api.ICPAEcommerce.domain.models;
 
+import com.api.ICPAEcommerce.domain.dtos.AddressDTO;
 import com.api.ICPAEcommerce.domain.dtos.UserDTO;
 import com.api.ICPAEcommerce.domain.enums.EnumUserProfile;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String name;
     private String email;
@@ -32,7 +33,7 @@ public class User implements UserDetails {
     private EnumUserProfile profile;
 
     @Embedded
-    private Address address;
+    private @Valid Address address;
 
 
     public User(UserDTO userDTO) {
@@ -40,13 +41,15 @@ public class User implements UserDetails {
         this.email = userDTO.email();
         this.password = userDTO.password();
         this.address = new Address(userDTO.address());
-        this.profile = EnumUserProfile.valueOf(userDTO.profile());
+        this.profile = userDTO.profile();
     }
 
-    public User(String email, String password, EnumUserProfile role) {
-        this.email =  email;
-        this.password = password;
-        this.profile = role;
+    public User(String name, String email, String encryptedPassword, AddressDTO address, EnumUserProfile profile) {
+        this.name = name;
+        this.email = email;
+        this.password = encryptedPassword;
+        this.address = new Address(address);
+        this.profile = profile;
     }
 
     @Override

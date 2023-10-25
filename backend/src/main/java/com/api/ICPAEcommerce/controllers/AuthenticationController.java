@@ -3,9 +3,11 @@ package com.api.ICPAEcommerce.controllers;
 import com.api.ICPAEcommerce.domain.dtos.RegisterDTO;
 import com.api.ICPAEcommerce.domain.dtos.TokenDTO;
 import com.api.ICPAEcommerce.domain.dtos.UserAuthenticationDTO;
+import com.api.ICPAEcommerce.domain.dtos.UserDTO;
 import com.api.ICPAEcommerce.infra.security.SecurityToken;
 import com.api.ICPAEcommerce.domain.models.User;
 import com.api.ICPAEcommerce.repositories.UserRepository;
+import com.api.ICPAEcommerce.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,9 @@ public class AuthenticationController {
     private SecurityToken securityToken;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @PostMapping("/authentication")
@@ -45,17 +50,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity registerUser(@RequestBody @Valid RegisterDTO dto) {
-        if(this.userRepository.findByEmail(dto.email()) != null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        var encryptedPassword = new BCryptPasswordEncoder().encode(dto.password());
-        User newUser =  new User(dto.email(), encryptedPassword, dto.role());
-
-        this.userRepository.save(newUser);
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity registerUser(@RequestBody @Valid UserDTO dto) {
+        return userService.saveUser(dto);
     }
 
 }
