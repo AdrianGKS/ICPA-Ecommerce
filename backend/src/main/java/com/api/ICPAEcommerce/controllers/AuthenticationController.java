@@ -1,25 +1,27 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.dtos.RegisterDTO;
-import com.api.ICPAEcommerce.domain.dtos.TokenDTO;
-import com.api.ICPAEcommerce.domain.dtos.UserAuthenticationDTO;
-import com.api.ICPAEcommerce.domain.dtos.UserDTO;
+import com.api.ICPAEcommerce.domain.dtos.*;
 import com.api.ICPAEcommerce.infra.security.SecurityToken;
 import com.api.ICPAEcommerce.domain.models.User;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import com.api.ICPAEcommerce.services.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/v1/login")
 public class AuthenticationController {
 
@@ -54,4 +56,24 @@ public class AuthenticationController {
         return userService.saveUser(dto);
     }
 
+    @PostMapping("/forgot-password")
+    public void forgotPassword(@RequestBody @Valid PasswordResetInputDTO input) {
+        Optional<User> optionalUser = Optional.ofNullable((User) userRepository.findByEmail(input.email()));
+        optionalUser.ifPresent(user -> {
+            String token = userService.generateToken(user);
+            //email
+            System.out.println(token);
+        });
+    }
+
+    @PostMapping("/change-password")
+    public void changePassword(PasswordUpdateWithTokenInputDTO input) {
+        try {
+            userService.changePassword(input.password(), input.token());
+
+        } catch (Exception e) {
+            log.error("Erro ao alterar a senha usando token: ", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

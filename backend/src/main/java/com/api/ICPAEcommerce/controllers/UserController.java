@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,6 +40,7 @@ public class UserController {
 
     @Autowired
     private ResetPasswordService resetPasswordService;
+
 
    /* @PostMapping("/create-user")
     public ResponseEntity createUser(@RequestBody @Valid UserDTO userDTO) {
@@ -105,32 +107,7 @@ public class UserController {
         return ResponseEntity.ok("Usuário excluído com sucesso!");
     }
 
-   /* @PostMapping("/recover-password")
-    public ResponseEntity recoverPassword(@RequestBody @Valid UserRecoverPasswordDTO userRecoverPasswordDTO) {
-        var user = userRepository.findByEmailIgnoreCase(userRecoverPasswordDTO.email());
-
-        if(user.isEmpty()) {
-            return ResponseEntity.ok().body("Usuário não existe para o e-mail informado!");
-        }
-
-        var tokenUser = userService.generateLinkToUpdatePassword(userRecoverPasswordDTO);
-
-        String link = "recover-password/" + tokenUser;
-        String receiver = userRecoverPasswordDTO.email();
-        String subject = "Solicitação de Alteração de Senha";
-        String name = user.get().getName();
-
-        try {
-            resetPasswordService.sendEmailResetPassword(receiver, subject, name, link);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-
-        return ResponseEntity.ok().body("E-mail enviado com sucesso!");
-    }
-
-
-    @PostMapping("/update-password/{token}")
+   /* @PostMapping("/update-password/{token}")
     public ResponseEntity updatePassword(@PathVariable String token, @RequestBody @Valid UserChangePasswordDTO userChangePasswordDTO) {
         var updatePassword = userService.updatePassword(token, userChangePasswordDTO.password());
 

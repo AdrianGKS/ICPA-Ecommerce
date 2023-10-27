@@ -14,8 +14,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class ProductDTO {
-
-    Long id;
     @NotBlank
     String code;
     @NotBlank
@@ -34,7 +32,6 @@ public class ProductDTO {
     public ProductDTO() {}
 
     public ProductDTO(Product product) {
-        this.id = product.getId();
         this.code = product.getCode();
         this.title = product.getTitle();
         this.description = product.getDescription();

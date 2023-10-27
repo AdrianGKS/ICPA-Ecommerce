@@ -48,6 +48,8 @@ public class SecurityConfigurations {
 
                 .requestMatchers(HttpMethod.POST, "/api/v1/login/authentication").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/login/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/login/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/login/change-password").permitAll()
 
                 .requestMatchers(HttpMethod.POST, "/api/v1/orders/create-order").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/orders/list-order/{id}").permitAll()
