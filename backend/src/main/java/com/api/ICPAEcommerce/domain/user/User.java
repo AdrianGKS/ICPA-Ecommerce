@@ -1,8 +1,7 @@
-package com.api.ICPAEcommerce.domain.models;
+package com.api.ICPAEcommerce.domain.user;
 
-import com.api.ICPAEcommerce.domain.dtos.AddressDTO;
-import com.api.ICPAEcommerce.domain.dtos.UserDTO;
-import com.api.ICPAEcommerce.domain.enums.EnumUserProfile;
+import com.api.ICPAEcommerce.domain.user.address.AddressDTO;
+import com.api.ICPAEcommerce.domain.user.address.Address;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -36,12 +35,12 @@ public class User implements UserDetails {
     private @Valid Address address;
 
 
-    public User(UserDTO userDTO) {
-        this.name = userDTO.name();
-        this.email = userDTO.email();
-        this.password = userDTO.password();
-        this.address = new Address(userDTO.address());
-        this.profile = userDTO.profile();
+    public User(UserRegisterDTO userRegisterDTO) {
+        this.name = userRegisterDTO.name();
+        this.email = userRegisterDTO.email();
+        this.password = userRegisterDTO.password();
+        this.address = new Address(userRegisterDTO.address());
+        this.profile = userRegisterDTO.profile();
     }
 
     public User(String name, String email, String encryptedPassword, AddressDTO address, EnumUserProfile profile) {

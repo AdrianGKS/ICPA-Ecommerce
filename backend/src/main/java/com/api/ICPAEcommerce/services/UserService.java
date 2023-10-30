@@ -1,8 +1,9 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.dtos.PasswordTokenPublicDTO;
-import com.api.ICPAEcommerce.domain.dtos.UserDTO;
-import com.api.ICPAEcommerce.domain.models.User;
+import com.api.ICPAEcommerce.domain.user.authentication.PasswordTokenPublicDTO;
+import com.api.ICPAEcommerce.domain.user.UserRegisterDTO;
+import com.api.ICPAEcommerce.domain.user.UserUpdateDTO;
+import com.api.ICPAEcommerce.domain.user.User;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +18,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.webjars.NotFoundException;
 
-import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.Date;
 
+/** Classe de serviços para Usuário
+ * @author Adrian Gabriel K. dos Santos
+ *
+ */
 @Service
 public class UserService implements UserDetailsService {
 
@@ -35,58 +37,50 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private ResetPasswordService resetPasswordService;
-
+    /** Implementação da classe UserDetails
+     *
+     * @return User
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username);
     }
 
+    /** Métodos para salvar usuário no BD
+     *
+     * @return 200 - user
+     */
     @Transactional
-    public ResponseEntity saveUser(UserDTO userDTO) {
+    public ResponseEntity saveUser(UserRegisterDTO userRegisterDTO) {
 
-        if(this.userRepository.findByEmail(userDTO.email()) != null) {
+        if(this.userRepository.findByEmail(userRegisterDTO.email()) != null) {
             return ResponseEntity.badRequest().build();
         }
 
-        var encryptedPassword = new BCryptPasswordEncoder().encode(userDTO.password());
+        var encryptedPassword = new BCryptPasswordEncoder().encode(userRegisterDTO.password());
 
-        User newUser =  new User(userDTO.name(), userDTO.email(), encryptedPassword, userDTO.address(), userDTO.profile());
+        User newUser =  new User(userRegisterDTO.name(), userRegisterDTO.email(), encryptedPassword, userRegisterDTO.address(), userRegisterDTO.profile());
 
         this.userRepository.save(newUser);
 
         return ResponseEntity.ok(newUser);
     }
 
+    /** Métodos para atualizar infos de um usuário
+     *
+     * @return 200 - userUpdateDTO
+     */
     @Transactional
-    public ResponseEntity updateUser(Long id, UserDTO userDTO) {
+    public ResponseEntity updateUser(Long id, UserUpdateDTO userUpdateDTO) {
         var user = userRepository.getReferenceById(id);
-
-        if (userDTO.name() != null) {
-            user.setName(userDTO.name());
-        }
-
-        if (userDTO.email() != null) {
-            var findUserByEmail = userRepository.findByEmailIgnoreCase(userDTO.email());
-
-            if (findUserByEmail.isPresent()) {
-                return ResponseEntity.ok("Email já cadastrado");
-            }
-
-            user.setEmail(userDTO.email());
-        }
-
-        if (userDTO.password() != null) {
-            var newPassword = passwordEncoder.encode(user.getPassword());
-            user.setPassword(newPassword);
-        }
-
         userRepository.save(user);
 
         return ResponseEntity.ok(user);
     }
 
+    /** Métodos para deletar usuário
+     *
+     */
     @Transactional
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
@@ -109,8 +103,7 @@ public class UserService implements UserDetailsService {
         PasswordTokenPublicDTO publicDTO = readPublicData(rawToken);
 
         if (isExpited(publicDTO)) {
-            throw new RuntimeException("Token expirado")
-;        }
+            throw new RuntimeException("Token expirado");        }
 
         User user = (User) userRepository.findByEmail(publicDTO.email());
 
@@ -144,43 +137,6 @@ public class UserService implements UserDetailsService {
 
         return created.plus(Duration.ofMinutes(5)).isBefore(now);
     }
-    ///////////////////////////////////////////////////////////////////////////////
 
-/*
-    @Transactional
-    public String generateLinkToUpdatePassword(UserRecoverPasswordDTO userRecoverPasswordDTO) {
-        var user = userRepository.findByEmailIgnoreCase(userRecoverPasswordDTO.email());
-
-        return generateToken(user.get());
-    }
-
-
-
-    public ResponseEntity<Object> updatePassword(String token, String password) {
-        Optional<Token> tokenOptional = tokenRepository.findByToken(token);
-
-        if(tokenOptional.isEmpty()) {
-            return ResponseEntity.ok().body("Token inválido!");
-        }
-
-        if(tokenOptional.get().getConfirmed() != null) {
-            return ResponseEntity.ok().body("Token já foi utilizado, solicite novamente alteração de password");
-        }
-
-        if(tokenOptional.get().getExpires().isBefore(OffsetDateTime.now())) {
-            return ResponseEntity.ok().body("Token expirado, solicite novamente alteração de password");
-        }
-
-        Optional<User> userOptional = userRepository.findById(tokenOptional.get().getUser().getId());
-        userOptional.get().setPassword(passwordEncoder.encode(password));
-        userRepository.save(userOptional.get());
-
-        //Salvar dados do token
-        tokenOptional.get().setConfirmed(OffsetDateTime.now());
-        tokenRepository.save(tokenOptional.get());
-
-        return ResponseEntity.ok().body("Senha atualizada com sucesso!");
-    }
-    */
-
+///////////////////////////////////////////////////////////////////////////////
 }

@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.dtos.ProductDTO;
+import com.api.ICPAEcommerce.domain.product.ProductDTO;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import com.api.ICPAEcommerce.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -12,8 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/** Rest controller das requisições sobre Produtos
+ * @author Adrian Gabriel K. dos Santos
+ */
+
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping("/api/v2/products")
 @Validated
 @SecurityRequirement(name = "bearer-key")
 public class ProductController {

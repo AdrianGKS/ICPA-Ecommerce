@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.infra.security;
 
-import com.api.ICPAEcommerce.domain.models.User;
+import com.api.ICPAEcommerce.domain.user.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;

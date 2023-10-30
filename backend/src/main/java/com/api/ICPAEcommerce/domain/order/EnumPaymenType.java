@@ -1,4 +1,4 @@
-package com.api.ICPAEcommerce.domain.enums;
+package com.api.ICPAEcommerce.domain.order;
 
 public enum EnumPaymenType {
 

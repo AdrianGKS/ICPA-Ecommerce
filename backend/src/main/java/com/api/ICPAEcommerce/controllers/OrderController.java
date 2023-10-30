@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.dtos.OrderDTO;
+import com.api.ICPAEcommerce.domain.order.OrderDTO;
 import com.api.ICPAEcommerce.repositories.OrderRepository;
 import com.api.ICPAEcommerce.services.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/orders")
+@RequestMapping("/api/v2/orders")
 @Validated
 @SecurityRequirement(name = "bearer-key")
 public class OrderController {

@@ -1,13 +1,12 @@
-package com.api.ICPAEcommerce.domain.dtos;
+package com.api.ICPAEcommerce.domain.user;
 
-import com.api.ICPAEcommerce.domain.enums.EnumUserProfile;
-import com.api.ICPAEcommerce.domain.models.Address;
+import com.api.ICPAEcommerce.domain.user.address.AddressDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record UserDTO(
+public record UserRegisterDTO(
     @NotBlank
     String name,
 

@@ -1,4 +1,4 @@
-package com.api.ICPAEcommerce.domain.dtos;
+package com.api.ICPAEcommerce.domain.user.authentication;
 
 import jakarta.validation.constraints.NotBlank;
 

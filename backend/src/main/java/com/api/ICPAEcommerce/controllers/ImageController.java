@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.dtos.ImageDTO;
+import com.api.ICPAEcommerce.domain.image.ImageDTO;
 import com.api.ICPAEcommerce.repositories.ImageRepository;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import com.api.ICPAEcommerce.services.ImageService;
@@ -13,7 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping("/api/v2/products")
 @Validated
 @SecurityRequirement(name = "bearer-key")
 public class ImageController {

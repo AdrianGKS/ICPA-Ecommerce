@@ -1,8 +1,11 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.dtos.*;
+import com.api.ICPAEcommerce.domain.user.User;
+import com.api.ICPAEcommerce.domain.user.authentication.PasswordResetInputDTO;
+import com.api.ICPAEcommerce.domain.user.authentication.PasswordUpdateWithTokenInputDTO;
+import com.api.ICPAEcommerce.domain.user.authentication.TokenDTO;
+import com.api.ICPAEcommerce.domain.user.authentication.UserAuthenticationDTO;
 import com.api.ICPAEcommerce.infra.security.SecurityToken;
-import com.api.ICPAEcommerce.domain.models.User;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import com.api.ICPAEcommerce.services.UserService;
 import jakarta.validation.Valid;
@@ -20,9 +23,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
+/** Rest Controller para requisições de autenticação e segurança
+ * @author Adrian Gabriel K. dos Santos
+ */
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/login")
+@RequestMapping("/api/v2/authentication")
 public class AuthenticationController {
 
     @Autowired
@@ -37,7 +43,12 @@ public class AuthenticationController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/authentication")
+    /** End-point para login na API
+     *
+     * @return 200 - token para usuário
+     *         400 - erro no login
+     */
+    @PostMapping("/login")
     public ResponseEntity authenticateUser(@RequestBody @Valid UserAuthenticationDTO userAuthenticationDTO) {
         try {
             var authenticationToken = new UsernamePasswordAuthenticationToken(userAuthenticationDTO.email(), userAuthenticationDTO.password());
@@ -46,26 +57,31 @@ public class AuthenticationController {
 
             return ResponseEntity.ok(new TokenDTO(tokenJWT));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity registerUser(@RequestBody @Valid UserDTO dto) {
-        return userService.saveUser(dto);
-    }
-
+    /** End-point para esquecimento de senha
+     *
+     */
     @PostMapping("/forgot-password")
     public void forgotPassword(@RequestBody @Valid PasswordResetInputDTO input) {
-        Optional<User> optionalUser = Optional.ofNullable((User) userRepository.findByEmail(input.email()));
-        optionalUser.ifPresent(user -> {
-            String token = userService.generateToken(user);
-            //email
-            System.out.println(token);
-        });
+        try {
+            Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(input.email());
+
+            optionalUser.ifPresent(user -> {
+                var token = userService.generateToken( user);
+                System.out.println(token);
+                //token deve ser enviado pelo e-mail
+            });
+        } catch (Exception e){
+            System.out.println("Erro: " + e.getMessage());
+        }
     }
 
+    /** End-point para mudança de senha
+     *
+     */
     @PostMapping("/change-password")
     public void changePassword(PasswordUpdateWithTokenInputDTO input) {
         try {

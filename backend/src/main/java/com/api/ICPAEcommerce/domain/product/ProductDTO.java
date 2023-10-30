@@ -1,8 +1,7 @@
-package com.api.ICPAEcommerce.domain.dtos;
+package com.api.ICPAEcommerce.domain.product;
 
-import com.api.ICPAEcommerce.domain.enums.EnumProductCategory;
-import com.api.ICPAEcommerce.domain.models.Image;
-import com.api.ICPAEcommerce.domain.models.Product;
+import com.api.ICPAEcommerce.domain.image.ImageDTO;
+import com.api.ICPAEcommerce.domain.image.Image;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -14,18 +13,25 @@ import java.util.Set;
 @Getter
 @Setter
 public class ProductDTO {
+
     @NotBlank
     String code;
+
     @NotBlank
     String title;
+
     @NotBlank
     String description;
+
     @Valid
     Set<ImageDTO> image;
+
     @DecimalMin("0.01")
     Double price;
+
     @Min(1)
     Integer quantity;
+
     @NotNull
     EnumProductCategory enumProductCategory;
 

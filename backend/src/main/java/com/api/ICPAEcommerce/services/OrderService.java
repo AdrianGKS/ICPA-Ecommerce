@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.dtos.OrderDTO;
-import com.api.ICPAEcommerce.domain.models.Order;
+import com.api.ICPAEcommerce.domain.order.OrderDTO;
+import com.api.ICPAEcommerce.domain.order.Order;
 import com.api.ICPAEcommerce.repositories.OrderRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;

@@ -1,8 +1,8 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.models.Product;
-import com.api.ICPAEcommerce.domain.dtos.ImageDTO;
-import com.api.ICPAEcommerce.domain.models.Image;
+import com.api.ICPAEcommerce.domain.product.Product;
+import com.api.ICPAEcommerce.domain.image.ImageDTO;
+import com.api.ICPAEcommerce.domain.image.Image;
 import com.api.ICPAEcommerce.repositories.ImageRepository;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import lombok.AllArgsConstructor;

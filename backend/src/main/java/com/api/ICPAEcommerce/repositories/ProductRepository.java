@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.repositories;
 
-import com.api.ICPAEcommerce.domain.models.Product;
+import com.api.ICPAEcommerce.domain.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

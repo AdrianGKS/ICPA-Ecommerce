@@ -1,8 +1,7 @@
-package com.api.ICPAEcommerce.domain.models;
+package com.api.ICPAEcommerce.domain.order;
 
-import com.api.ICPAEcommerce.domain.dtos.OrderDTO;
-import com.api.ICPAEcommerce.domain.enums.EnumPaymenType;
-import com.api.ICPAEcommerce.domain.enums.EnumOrderStatus;
+import com.api.ICPAEcommerce.domain.user.address.Address;
+import com.api.ICPAEcommerce.domain.product.Product;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.OffsetDateTime;

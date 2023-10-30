@@ -1,6 +1,6 @@
-package com.api.ICPAEcommerce.domain.models;
+package com.api.ICPAEcommerce.domain.image;
 
-import com.api.ICPAEcommerce.domain.dtos.ImageDTO;
+import com.api.ICPAEcommerce.domain.product.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
