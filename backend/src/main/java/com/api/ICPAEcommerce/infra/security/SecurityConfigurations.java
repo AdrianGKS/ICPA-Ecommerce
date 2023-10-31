@@ -34,15 +34,10 @@ public class SecurityConfigurations {
                 .requestMatchers(HttpMethod.PUT, "/api/v2/users/update-user/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/v2/users/delete-user/{id}").hasRole("ADMIN")
 
-                .requestMatchers(HttpMethod.POST, "/api/v2/products/create-product").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/v2/products/list-products/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v2/products/update-product/{id}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/v2/products/delete-product/{id}").hasRole("ADMIN")
-
-                .requestMatchers(HttpMethod.POST, "/api/v2/products/{id}/create-image").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/v2/products/{produtoId}/list-images").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v2/products/update-image/{id}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/v2/products/delete-image/{id}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v2/products/create-product").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v2/products/list-products/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/v2/products/update-product").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/api/v2/products/delete-product/{id}").permitAll()
 
                 .requestMatchers(HttpMethod.POST, "/api/v2/orders/create-order").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v2/orders/list-order/{id}").hasRole("ADMIN")

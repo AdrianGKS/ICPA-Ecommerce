@@ -27,7 +27,7 @@ public class UserController {
 
 
     /** End-point de criação de usuários
-     * @return DTO Usuário - informações para salvar usuário no BD
+     * @return DTO Usuário - informações salvas sobre usuário
      */
    @PostMapping("/register")
    public ResponseEntity registerUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO) {

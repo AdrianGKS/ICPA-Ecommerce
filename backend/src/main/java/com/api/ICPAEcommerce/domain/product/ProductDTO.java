@@ -1,7 +1,5 @@
 package com.api.ICPAEcommerce.domain.product;
 
-import com.api.ICPAEcommerce.domain.image.ImageDTO;
-import com.api.ICPAEcommerce.domain.image.Image;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -18,13 +16,10 @@ public class ProductDTO {
     String code;
 
     @NotBlank
-    String title;
+    String name;
 
     @NotBlank
     String description;
-
-    @Valid
-    Set<ImageDTO> image;
 
     @DecimalMin("0.01")
     Double price;
@@ -35,18 +30,11 @@ public class ProductDTO {
     @NotNull
     EnumProductCategory enumProductCategory;
 
-    public ProductDTO() {}
 
     public ProductDTO(Product product) {
         this.code = product.getCode();
-        this.title = product.getTitle();
+        this.name = product.getName();
         this.description = product.getDescription();
-        this.image = new HashSet<>();
-
-        for (Image image : product.getImages()) {
-            this.image.add(new ImageDTO(image));
-        }
-
         this.price = product.getPrice();
         this.quantity = product.getQuantity();
         this.enumProductCategory = product.getEnumProductCategory();

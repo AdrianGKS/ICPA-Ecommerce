@@ -1,6 +1,5 @@
 package com.api.ICPAEcommerce.domain.product;
 
-import com.api.ICPAEcommerce.domain.image.Image;
 import com.api.ICPAEcommerce.domain.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,56 +19,46 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String code;
-    private String title;
+    private String name;
     private String description;
+    
     private Double price;
     private Integer quantity;
-    private EnumProductCategory enumProductCategory;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
-    private Set<Image> images = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    private EnumProductCategory enumProductCategory;
 
     @ManyToOne
     private Order order;
 
     public Product(ProductDTO productDTO) {
-        this.code = productDTO.getCode();
-        this.title = productDTO.getTitle();
+        this.name = productDTO.getName();
         this.description = productDTO.getDescription();
-
-        if (productDTO.getImage() != null && !productDTO.getImage().isEmpty()) {
-            productDTO.getImage().stream().map(Image::new).forEach(this::accept);
-        }
-
         this.price = productDTO.getPrice();
         this.quantity = productDTO.getQuantity();
         this.enumProductCategory = productDTO.getEnumProductCategory();
     }
 
-    public void update(ProductDTO productDTO) {
+    public void update(UpdateProductDTO productDTO) {
 
-        if (productDTO.getCode() != null) {
-            this.code = productDTO.getCode();
+        if (productDTO.code() != null) {
+            this.code = productDTO.code();
         }
-        if (productDTO.getTitle() != null) {
-            this.title = productDTO.getTitle();
+        if (productDTO.name() != null) {
+            this.name = productDTO.name();
         }
-        if (productDTO.getDescription() != null) {
-            this.description = productDTO.getDescription();
+        if (productDTO.description() != null) {
+            this.description = productDTO.description();
         }
-        if (productDTO.getPrice() != 0) {
-            this.price = productDTO.getPrice();
-        }
-        if (productDTO.getQuantity() != 0) {
-            this.quantity = productDTO.getQuantity();
-        }
-        if (productDTO.getEnumProductCategory() != null) {
-            this.enumProductCategory = productDTO.getEnumProductCategory();
+//        if (productDTO.price() != 0) {
+//            this.price = productDTO.price();
+//        }
+//        if (productDTO.quantity() != 0) {
+//            this.quantity = productDTO.quantity();
+//        }
+        if (productDTO.enumProductCategory() != null) {
+            this.enumProductCategory = productDTO.enumProductCategory();
         }
     }
 
-    private void accept(Image image) {
-        image.setProduct(this);
-        this.images.add(image);
-    }
 }

@@ -2,6 +2,7 @@ package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.product.Product;
 import com.api.ICPAEcommerce.domain.product.ProductDTO;
+import com.api.ICPAEcommerce.domain.product.UpdateProductDTO;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,16 +29,12 @@ public class ProductService {
     }
 
     @Transactional
-    public ResponseEntity updateProduct(Long id, ProductDTO productDTO) {
-        if (findProduct(productDTO)) {
-            var product = productRepository.getReferenceById(id);
-            product.update(productDTO);
-            productRepository.save(product);
+    public ResponseEntity updateProduct(UpdateProductDTO productDTO) {
+        var product = productRepository.getReferenceById(productDTO.id());
+        product.update(productDTO);
+        productRepository.save(product);
 
-            return ResponseEntity.ok(new ProductDTO(product));
-        }
-
-        return ResponseEntity.ok("Código do produto ou Título já cadastrado");
+        return ResponseEntity.ok(new ProductDTO(product));
     }
 
     @Transactional
@@ -47,7 +44,7 @@ public class ProductService {
 
     public boolean findProduct(ProductDTO productDTO) {
         var findProductCode = productRepository.findByCodeIgnoreCase(productDTO.getCode());
-        var findProductTitle = productRepository.findByTitleIgnoreCase(productDTO.getTitle());
+        var findProductTitle = productRepository.findByNameIgnoreCase(productDTO.getName());
 
         return findProductCode.isEmpty() && findProductTitle.isEmpty();
     }
