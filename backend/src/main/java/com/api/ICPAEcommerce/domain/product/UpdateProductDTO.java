@@ -2,6 +2,7 @@ package com.api.ICPAEcommerce.domain.product;
 
 import jakarta.validation.constraints.NotNull;
 
+
 public record UpdateProductDTO(
 
         @NotNull

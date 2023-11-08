@@ -3,17 +3,11 @@ package com.api.ICPAEcommerce.domain.product;
 
 public record ListProductDTO(
         Long id,
-
         String code,
-
         String name,
-
         String description,
-
         double price,
-
         int quantity,
-
         EnumProductCategory enumProductCategory
 ) {
     public ListProductDTO(Product product) {

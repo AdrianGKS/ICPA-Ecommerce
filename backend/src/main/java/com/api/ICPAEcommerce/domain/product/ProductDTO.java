@@ -2,7 +2,6 @@ package com.api.ICPAEcommerce.domain.product;
 
 import jakarta.validation.constraints.*;
 
-
 public record ProductDTO (
 
     @NotBlank

@@ -3,8 +3,11 @@ package com.api.ICPAEcommerce.domain.product;
 import com.api.ICPAEcommerce.domain.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.HashSet;
-import java.util.Set;
+
+/** Entidade de Produto
+ *
+ * @author Adrian Gabriel K. dos Santos
+ */
 
 @Table(name = "products")
 @Entity(name = "Product")
