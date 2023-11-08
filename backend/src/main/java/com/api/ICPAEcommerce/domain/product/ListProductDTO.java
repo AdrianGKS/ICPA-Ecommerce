@@ -10,9 +10,9 @@ public record ListProductDTO(
 
         String description,
 
-        Double price,
+        double price,
 
-        Integer quantity,
+        int quantity,
 
         EnumProductCategory enumProductCategory
 ) {

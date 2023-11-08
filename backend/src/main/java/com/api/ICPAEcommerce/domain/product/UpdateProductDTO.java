@@ -7,15 +7,9 @@ public record UpdateProductDTO(
         @NotNull
         Long id,
         String code,
-
         String name,
-
         String description,
-
-//        Double price,
-//
-//        Integer quantity,
-
-        EnumProductCategory enumProductCategory
+        double price,
+        int quantity
 ) {
 }

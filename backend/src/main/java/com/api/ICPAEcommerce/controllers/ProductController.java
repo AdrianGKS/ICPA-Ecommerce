@@ -1,9 +1,6 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.product.ListProductDTO;
-import com.api.ICPAEcommerce.domain.product.Product;
-import com.api.ICPAEcommerce.domain.product.ProductDTO;
-import com.api.ICPAEcommerce.domain.product.UpdateProductDTO;
+import com.api.ICPAEcommerce.domain.product.*;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import com.api.ICPAEcommerce.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -13,8 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /** Rest controller das requisições sobre Produtos
  * @author Adrian Gabriel K. dos Santos
@@ -36,10 +35,14 @@ public class ProductController {
      * @return DTO Produtos - informações salvas sobre produtos
      */
     @PostMapping("/create-product")
-    public ResponseEntity createProduct(@RequestBody @Valid ProductDTO productDTO) {
-        var product = productService.saveProduct(productDTO);
+    @Transactional
+    public ResponseEntity createProduct(@RequestBody @Valid ProductDTO productDTO, UriComponentsBuilder uriBuilder) {
+        var product = new Product(productDTO);
+        productRepository.save(product);
 
-        return ResponseEntity.ok().body(product);
+        var uri =  uriBuilder.path("/products/{id}").buildAndExpand(product.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(new DetailProductDTO(product));
     }
 
     /** End-point de listagem geral de produtos
@@ -47,8 +50,9 @@ public class ProductController {
      * @return List - Lista de produtos cadastrados
      */
     @GetMapping("/list-products")
-    public ResponseEntity<Page<ListProductDTO>> listProducts(@PageableDefault Pageable pageable) {
+    public ResponseEntity<Page<ListProductDTO>> listProducts(@PageableDefault(sort = {"name"}) Pageable pageable) {
         var products = productRepository.findAll(pageable).map(ListProductDTO::new);
+
         return ResponseEntity.ok(products);
     }
 
@@ -57,40 +61,17 @@ public class ProductController {
      * @return Produto - produto cadastrado
      */
     @GetMapping("/list-products/name/{name}")
-    @ResponseBody
-    public ResponseEntity searchProductsByTitle(@PathVariable String name) {
-        var products = productRepository.findByNameIgnoreCase(name);
+    public ResponseEntity<Page<ListProductDTO>> listProductsByName(@PathVariable String name, @PageableDefault(sort = {"name"}) Pageable pageable) {
+        var products = productRepository.findByNamePart(name, pageable).map(ListProductDTO::new);
 
-        if (!products.isEmpty()) {
-            return ResponseEntity.ok(products);
-        }
-
-        return ResponseEntity.ok("Produto não encontrado");
-
+        return ResponseEntity.ok(products);
     }
 
-    /** End-point de listagem de produto pelo id
-     *
-     * @return Produto - produto cadastrado
-     */
-    @GetMapping("/list-products/id/{id}")
-    @ResponseBody
-    public ResponseEntity searchProductsById(@PathVariable Long id) {
-        var product = productRepository.getReferenceById(id);
+    @GetMapping("/list-product/code/{code}")
+    public ResponseEntity listProductByCode(@PathVariable String code) {
+        var product = productRepository.findByCode(code);
 
-        return ResponseEntity.ok(new ProductDTO(product));
-    }
-
-    @GetMapping("/list-products/code/{code}")
-    @ResponseBody
-    public ResponseEntity searchProductsByCode(@PathVariable String code) {
-        var product = productRepository.findByCodeIgnoreCase(code.toUpperCase());
-
-        if (!product.isEmpty()) {
-            return ResponseEntity.ok(product);
-        }
-
-        return ResponseEntity.ok("Produto não encontrado");
+        return ResponseEntity.ok(product);
     }
 
     /** End-point de atualização de produto
@@ -98,13 +79,19 @@ public class ProductController {
      * @return Produto - produto atualizado
      */
     @PutMapping("/update-product")
+    @Transactional
     public ResponseEntity updateProduct(@RequestBody @Valid UpdateProductDTO productDTO) {
         var product = productRepository.getReferenceById(productDTO.id());
         product.update(productDTO);
-        return ResponseEntity.ok().body(product);
+
+        return ResponseEntity.ok(new DetailProductDTO(product));
 
     }
 
+    /** End-point de atualização de produto
+
+     * @return 200 - mensagem de exclusão
+     */
     @DeleteMapping("/delete-product/{id}")
     public ResponseEntity deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);

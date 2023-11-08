@@ -22,8 +22,8 @@ public class Product {
     private String name;
     private String description;
     
-    private Double price;
-    private Integer quantity;
+    private double price;
+    private int quantity;
 
     @Enumerated(EnumType.STRING)
     private EnumProductCategory enumProductCategory;
@@ -32,11 +32,12 @@ public class Product {
     private Order order;
 
     public Product(ProductDTO productDTO) {
-        this.name = productDTO.getName();
-        this.description = productDTO.getDescription();
-        this.price = productDTO.getPrice();
-        this.quantity = productDTO.getQuantity();
-        this.enumProductCategory = productDTO.getEnumProductCategory();
+        this.code = productDTO.code();
+        this.name = productDTO.name();
+        this.description = productDTO.description();
+        this.price = productDTO.price();
+        this.quantity = productDTO.quantity();
+        this.enumProductCategory = productDTO.enumProductCategory();
     }
 
     public void update(UpdateProductDTO productDTO) {
@@ -50,15 +51,11 @@ public class Product {
         if (productDTO.description() != null) {
             this.description = productDTO.description();
         }
-//        if (productDTO.price() != 0) {
-//            this.price = productDTO.price();
-//        }
-//        if (productDTO.quantity() != 0) {
-//            this.quantity = productDTO.quantity();
-//        }
-        if (productDTO.enumProductCategory() != null) {
-            this.enumProductCategory = productDTO.enumProductCategory();
+        if (productDTO.price() != 0) {
+            this.price = productDTO.price();
+        }
+        if (productDTO.quantity() != 0) {
+            this.quantity = productDTO.quantity();
         }
     }
-
 }
