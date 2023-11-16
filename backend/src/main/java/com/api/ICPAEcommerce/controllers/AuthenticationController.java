@@ -8,9 +8,11 @@ import com.api.ICPAEcommerce.domain.user.authentication.UserAuthenticationDTO;
 import com.api.ICPAEcommerce.infra.security.SecurityToken;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import com.api.ICPAEcommerce.services.UserService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,20 +30,18 @@ import java.util.Optional;
  */
 @RestController
 @Slf4j
+@AllArgsConstructor
 @RequestMapping("/api/v2/authentication")
+@Tag(name = "Authetication")
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticationManager manager;
+    private final AuthenticationManager manager;
 
-    @Autowired
-    private SecurityToken securityToken;
+    private final SecurityToken securityToken;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     /** End-point para login na API
      *

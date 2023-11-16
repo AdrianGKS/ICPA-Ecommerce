@@ -4,6 +4,7 @@ import com.api.ICPAEcommerce.domain.order.OrderDTO;
 import com.api.ICPAEcommerce.repositories.OrderRepository;
 import com.api.ICPAEcommerce.services.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v2/orders")
 @Validated
 @SecurityRequirement(name = "bearer-key")
+@Tag(name = "Order")
 public class OrderController {
 
     @Autowired

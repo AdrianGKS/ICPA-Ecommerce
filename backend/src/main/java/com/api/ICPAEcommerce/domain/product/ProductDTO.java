@@ -1,5 +1,6 @@
 package com.api.ICPAEcommerce.domain.product;
 
+import com.api.ICPAEcommerce.domain.file.FileReference;
 import jakarta.validation.constraints.*;
 
 public record ProductDTO (
@@ -20,7 +21,9 @@ public record ProductDTO (
     int quantity,
 
     @NotNull
-    EnumProductCategory enumProductCategory
+    EnumProductCategory enumProductCategory,
 
+    @NotNull
+    FileReference file
 ){
 }

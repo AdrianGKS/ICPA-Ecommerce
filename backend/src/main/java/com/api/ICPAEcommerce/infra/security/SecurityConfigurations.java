@@ -52,6 +52,9 @@ public class SecurityConfigurations {
                 .requestMatchers(HttpMethod.POST, "/api/v2/authentication/forgot-password").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v2/authentication/change-password").permitAll()
 
+                .requestMatchers(HttpMethod.POST, "/api/v2/files/images").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v2/files/documents").permitAll()
+
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
 
                 .anyRequest().authenticated()

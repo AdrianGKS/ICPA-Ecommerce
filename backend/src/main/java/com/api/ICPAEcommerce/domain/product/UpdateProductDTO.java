@@ -1,5 +1,6 @@
 package com.api.ICPAEcommerce.domain.product;
 
+import com.api.ICPAEcommerce.domain.file.FileReference;
 import jakarta.validation.constraints.NotNull;
 
 
@@ -11,6 +12,8 @@ public record UpdateProductDTO(
         String name,
         String description,
         double price,
-        int quantity
+        int quantity,
+        @NotNull
+        FileReference file
 ) {
 }
