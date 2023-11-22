@@ -43,10 +43,10 @@ public class SecurityConfigurations {
                 .requestMatchers(HttpMethod.PUT, "/api/v2/products/update-product").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/api/v2/products/delete-product/{code}").permitAll()
 
-                .requestMatchers(HttpMethod.POST, "/api/v2/orders/create-order").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/v2/orders/list-order/{id}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/v2/orders/list-orders").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v2/orders/update-status/{id}").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v2/orders/create-order").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v2/orders/list-order/{id}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v2/orders/list-orders").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/v2/orders/update-status/{id}").permitAll()
 
                 .requestMatchers(HttpMethod.POST, "/api/v2/authentication/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v2/authentication/forgot-password").permitAll()
@@ -54,6 +54,7 @@ public class SecurityConfigurations {
 
                 .requestMatchers(HttpMethod.POST, "/api/v2/files/images").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v2/files/documents").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v2/files/downloads/{fileReferenceId}/{fileName}").permitAll()
 
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
 
