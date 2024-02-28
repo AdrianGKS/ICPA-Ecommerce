@@ -7,7 +7,7 @@ ICPA E-Commerce é um projeto que visa criar um site de comércio eletrônico pa
 
 De que coisas você precisa para instalar o software e como instalá-lo?
 ```
-Java Development Kit 21
+Java Development Kit 17
 IDE com suporte para linguagem Java (ex. Intelijj IDEA)
 Aplicativo para testar APIs (ex. Insomnia)
 Git
