@@ -32,9 +32,7 @@ Testar os requests no aplicativo de testes
 As ferramentas utilizadas para construir o projeto foram:
 
 -   [Java](https://www.oracle.com/br/java/) - Linguagem de Programação
--   [JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript) - Linguagem de Programação
 -   [Spring](https://spring.io/) - Framework
--   [React](https://react.dev/) - Framework
 -   [Maven](https://maven.apache.org/)  - Gerenciador de Dependências
 -   [PostgreSQL](https://www.postgresql.org/)  - Banco de Dados
 -   [Amazon S3](https://aws.amazon.com/pt/s3/) - Servidor
