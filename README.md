@@ -64,10 +64,10 @@ Os responsáveis pela construção do projeto foram:
 -   [**Glefferson Vicente**](https://github.com/gleffersonv)  -  _Desenvolvimento Front-End_
 -   [**Daniel Filipe**](https://github.com/DanielKitanaxiFilipe)  -  _Desenvolvimento Front-End_
 -   [**Ygor Mendes**](https://github.com/MendesYgor)  -  _Desenvolvimento Front-End_
--   [**Gabrielle Almeida**](https://github.com/gaabrelle)  -  _Desing de Interface e Experiência do Usuário (UI/UX)_
+-   [**Gabrielle Almeida**](https://github.com/gaabrelle)  -  _Design de Interface e Experiência do Usuário (UI/UX)_
 -   [**Victor Silva**](https://github.com/vps-victor)  -  _DevOps e SCRUM Master_
 -   [**Zeriel Ribeiro**](https://github.com/zerielribeiro)  -  _DevOps_
 
 ## 📝 Licença
 
-Esse projeto está sob licença. Veja o arquivo  [LICENÇA](link)  para mais detalhes.
+Esse projeto está sob licença. Veja o arquivo [LICENÇA](link) para mais detalhes.
