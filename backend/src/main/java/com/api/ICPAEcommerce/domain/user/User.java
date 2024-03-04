@@ -51,6 +51,13 @@ public class User implements UserDetails {
         this.profile = profile;
     }
 
+    public User(UserUpdateDTO userUpdateDTO) {
+        this.name = userUpdateDTO.name();
+        this.email = userUpdateDTO.email();
+        this.address = new Address(userUpdateDTO.address());
+
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.profile == EnumUserProfile.ADMIN)

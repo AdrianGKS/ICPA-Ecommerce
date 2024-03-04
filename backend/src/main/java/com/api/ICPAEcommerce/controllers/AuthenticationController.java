@@ -8,7 +8,6 @@ import com.api.ICPAEcommerce.domain.user.authentication.UserAuthenticationDTO;
 import com.api.ICPAEcommerce.infra.security.SecurityToken;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import com.api.ICPAEcommerce.services.UserService;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -31,7 +30,7 @@ import java.util.Optional;
 @RestController
 @Slf4j
 @AllArgsConstructor
-@RequestMapping("/api/v2/authentication")
+@RequestMapping("/api/v1/authentication")
 @Tag(name = "Authetication")
 public class AuthenticationController {
 

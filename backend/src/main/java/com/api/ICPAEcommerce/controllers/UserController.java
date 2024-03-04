@@ -1,23 +1,35 @@
 package com.api.ICPAEcommerce.controllers;
 
+import com.api.ICPAEcommerce.domain.user.User;
 import com.api.ICPAEcommerce.domain.user.UserRegisterDTO;
 import com.api.ICPAEcommerce.domain.user.UserUpdateDTO;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import com.api.ICPAEcommerce.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Rest Controller para requisições de usuário
  * @author Adrian Gabriel K. dos Santos
  */
 
 @RestController
-@RequestMapping("/api/v2/users")
-@Tag(name = "User")
+@RequestMapping("/api/v1/users")
+@Tag(name = "User Requests")
 @SecurityRequirement(name = "bearer-key")
 public class UserController {
 
@@ -27,21 +39,53 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-
-    /** End-point de criação de usuários
-     * @return DTO Usuário - informações salvas sobre usuário
-     */
+    @Operation(summary = "Rota responsável pelo cadastro de usuário")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Pessoa cadastrada com sucesso",
+                    content = { @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = UserRegisterDTO.class)
+                            )
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Usuário já registrado",
+                    content = { @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseEntity.class)
+                            )
+                    }
+            )
+    })
    @PostMapping("/register")
-   public ResponseEntity registerUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO) {
-
-       return userService.saveUser(userRegisterDTO);
+    public ResponseEntity registerUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO, UriComponentsBuilder uriComponentsBuilder) {
+       return userService.saveUser(userRegisterDTO, uriComponentsBuilder);
    }
 
-    /** End-point para listagem de usuários
-     *
-     * @return Se há usuário - List de usuários existentes no BD
-     *         Se não há - mensagem para usuário
-     */
+    @Operation(summary = "Rota responsável pela listagem de usuários")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = User.class)
+                            )
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "200",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseEntity.class)
+                            )
+                    }
+            )
+    })
     @GetMapping("/list-users")
     @ResponseBody
     public ResponseEntity listUsers() {
@@ -53,38 +97,97 @@ public class UserController {
         return ResponseEntity.ok("Não há usuários cadastrados");
     }
 
-    /** End-point para listar usuário pelo ID
-     *
-     * @return DTO Usuário -  usuário com o Id escolhido
-     */
+    @Operation(summary = "Rota responsável pela listagem de usuários por ID")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = User.class)
+                            )
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Usuário não encontrado",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseEntity.class)
+                            )
+                    }
+            )
+    })
     @GetMapping("/list-user/{userId}")
     @ResponseBody
     public ResponseEntity listUserById(@PathVariable Long userId) {
-        var user = userRepository.getReferenceById(userId);
+        if (userRepository.existsById(userId)) {
+            var user = userRepository.getReferenceById(userId);
+            return ResponseEntity.ok(user);
+        }
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.badRequest().body("Usuário não encontrado");
     }
 
-    /** End-point para atualizar informações do Usuário
-     *
-     * @return DTO Usuário - usuário com infos atualizadas
-     */
+    @Operation(summary = "Rota responsável pela atualização de usuários")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = User.class)
+                            )
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Usuário não encontrado",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseEntity.class)
+                            )
+                    }
+            )
+    })
     @PutMapping("/update-user/{userId}")
     public ResponseEntity updateUser(@PathVariable Long userId, @RequestBody UserUpdateDTO userUpdateDTO) {
-        var user = userService.updateUser(userId, userUpdateDTO);
-
-        return ResponseEntity.ok(user);
+        return userService.updateUser(userId, userUpdateDTO);
     }
 
-    /** End-point para deletar usuário
-     *
-     * @return 200 - mensagem de confirmação
-     */
+    @Operation(summary = "Rota responsável por deletar usuários")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário excluído",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseEntity.class)
+                            )
+                    }
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "ID inválido",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ResponseEntity.class)
+                            )
+                    }
+            )
+    })
     @DeleteMapping("/delete-user/{userId}")
     public ResponseEntity deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+        if (userRepository.existsById(userId)) {
+            userService.deleteUser(userId);
+            return ResponseEntity.ok("Usuário excluído com sucesso!");
+        }
 
-        return ResponseEntity.ok("Usuário excluído com sucesso!");
-    }
+        return ResponseEntity.badRequest().body("Usuário não encontrado.");
+        }
 
 }

@@ -12,7 +12,5 @@ public record UserUpdateDTO(
     String email,
 
     @Valid
-    AddressDTO address,
-
-    EnumUserProfile profile
+    AddressDTO address
 ) {}
