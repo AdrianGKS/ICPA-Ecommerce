@@ -7,7 +7,7 @@ ICPA E-Commerce é um projeto que visa criar um site de comércio eletrônico pa
 
 De que coisas você precisa para instalar o software e como instalá-lo?
 ```
-Java Development Kit 17
+Java Development Kit 21
 IDE com suporte para linguagem Java (ex. Intelijj IDEA)
 Aplicativo para testar APIs (ex. Insomnia)
 Git
@@ -57,7 +57,7 @@ Os responsáveis pela construção do projeto foram:
 -   [**Gabriel Magioli**](https://github.com/gabemagioli)  -  _Desenvolvimento Back-End_
 -   [**Eduardo Henrique**](https://github.com/Eduhenrique1) - _Desenvolvimento Front-End_
 -   [**Robert Santos**](https://github.com/RO-HSA) - _Desenvolvimento Front-End_
--   [**F. David**](https://github.com/Zerozhq) - _Desenvolvimento Front-End_
+-   [**Francisco David**](https://github.com/Zerozhq) - _Desenvolvimento Front-End_
 -   [**Verônica Valério**](https://github.com/veronicasvalerio)  -  _SCRUM Master_
 ### Também Contribuíram...
 -   [**Lucas Araújo**](https://github.com/lucarauj)  -  _Desenvolvimento Back-End_
