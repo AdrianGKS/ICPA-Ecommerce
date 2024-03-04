@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 
 @RestController
-@RequestMapping("/api/v2/products")
+@RequestMapping("/api/v1/products")
 @Tag(name = "Product")
 @Validated
 @SecurityRequirement(name = "bearer-key")

@@ -1,6 +1,5 @@
 package com.api.ICPAEcommerce.domain.user;
 
-import com.api.ICPAEcommerce.domain.user.address.AddressDTO;
 import com.api.ICPAEcommerce.domain.user.address.Address;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -43,12 +42,11 @@ public class User implements UserDetails {
         this.profile = userRegisterDTO.profile();
     }
 
-    public User(String name, String email, String encryptedPassword, AddressDTO address, EnumUserProfile profile) {
-        this.name = name;
-        this.email = email;
-        this.password = encryptedPassword;
-        this.address = new Address(address);
-        this.profile = profile;
+    public User(UserUpdateDTO userUpdateDTO) {
+        this.name = userUpdateDTO.name();
+        this.email = userUpdateDTO.email();
+        this.address = new Address(userUpdateDTO.address());
+
     }
 
     @Override

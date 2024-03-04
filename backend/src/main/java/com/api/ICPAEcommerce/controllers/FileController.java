@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v2/files")
+@RequestMapping("/api/v1/files")
 @AllArgsConstructor
 public class FileController {
 

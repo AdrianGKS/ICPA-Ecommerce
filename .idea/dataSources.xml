@@ -14,17 +14,5 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="unknown" uuid="fc28b2d6-a0c9-44b5-97f1-b208bb80c771">
-      <driver-ref>athena</driver-ref>
-      <synchronize>true</synchronize>
-      <imported>true</imported>
-      <remarks>$PROJECT_DIR$/backend/src/main/resources/application.properties</remarks>
-      <jdbc-driver>com.simba.athena.jdbc42.Driver</jdbc-driver>
-      <jdbc-url>${url_database}</jdbc-url>
-      <jdbc-additional-properties>
-        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
-      </jdbc-additional-properties>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
   </component>
 </project>

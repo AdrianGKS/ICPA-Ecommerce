@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v2/orders")
+@RequestMapping("/api/v1/orders")
 @Validated
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Order")
