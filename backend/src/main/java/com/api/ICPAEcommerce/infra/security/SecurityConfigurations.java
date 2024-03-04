@@ -58,8 +58,8 @@ public class SecurityConfigurations {
 
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
 
-                .anyRequest().authenticated()
-                .and()).addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .anyRequest().authenticated())
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
