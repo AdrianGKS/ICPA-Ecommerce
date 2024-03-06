@@ -53,7 +53,6 @@ public class UserService implements UserDetailsService {
      */
     @Transactional
     public ResponseEntity saveUser(UserRegisterDTO userRegisterDTO, UriComponentsBuilder uriComponentsBuilder) {
-
         if(this.userRepository.findByEmail(userRegisterDTO.email()) != null) {
             return ResponseEntity.badRequest().body("Usuário já registrado");
         }
@@ -61,6 +60,8 @@ public class UserService implements UserDetailsService {
         var encryptedPassword = new BCryptPasswordEncoder().encode(userRegisterDTO.password());
 
         User user =  new User(userRegisterDTO);
+        user.setPassword(encryptedPassword);
+
         this.userRepository.save(user);
 
         var uri = uriComponentsBuilder.path("/users/{id}").buildAndExpand(user.getId()).toUri();
