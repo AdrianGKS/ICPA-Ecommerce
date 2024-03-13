@@ -17,7 +17,7 @@ public class StorageProperties {
     private S3 s3 = new S3();
 
     @Data
-    public class S3 {
+    public static class S3 {
         @NotBlank
         private String keyId;
         @NotBlank

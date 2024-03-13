@@ -5,9 +5,9 @@ import com.api.ICPAEcommerce.repositories.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /** Classe de serviços para regras de negócio sobre Produtos
@@ -26,13 +26,15 @@ public class ProductService {
      * @return 201 - produto criado
      */
     @Transactional
-    public ResponseEntity register(ProductDTO productDTO, UriComponentsBuilder builder) {
+    public ResponseEntity register(ProductDTO productDTO,
+                                   UriComponentsBuilder builder) {
         var product = new Product(productDTO);
         productRepository.save(product);
 
         var uri =  builder.path("/products/{id}").buildAndExpand(product.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(new DetailProductDTO(product));
+        return ResponseEntity.created(uri)
+                .body(new DetailProductDTO(product));
     }
 
     /** Listagem de todos os produtos

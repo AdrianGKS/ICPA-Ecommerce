@@ -1,6 +1,9 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.product.*;
+import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
+import com.api.ICPAEcommerce.domain.product.ListProductDTO;
+import com.api.ICPAEcommerce.domain.product.ProductDTO;
+import com.api.ICPAEcommerce.domain.product.UpdateProductDTO;
 import com.api.ICPAEcommerce.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,7 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 
 @RestController
-@RequestMapping("/api/v2/products")
+@RequestMapping("/api/v1/products")
 @Tag(name = "Product")
 @Validated
 @SecurityRequirement(name = "bearer-key")

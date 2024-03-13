@@ -1,6 +1,6 @@
-package com.api.ICPAEcommerce.domain.file;
-
-public record DownloadRequestResult(
-        String downloadSignedUrl
-) {
-}
+//package com.api.ICPAEcommerce.domain.file;
+//
+//public record DownloadRequestResult(
+//        String downloadSignedUrl
+//) {
+//}

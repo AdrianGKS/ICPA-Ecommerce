@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Type {
-    DOCUMENT (false),
+   // DOCUMENT (false),
     IMAGE (true);
 
     private final boolean publicAccessible;

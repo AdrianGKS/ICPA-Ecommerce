@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -51,19 +52,21 @@ public class UserService implements UserDetailsService {
      * @return 200 - user
      */
     @Transactional
-    public ResponseEntity saveUser(UserRegisterDTO userRegisterDTO) {
-
+    public ResponseEntity saveUser(UserRegisterDTO userRegisterDTO, UriComponentsBuilder uriComponentsBuilder) {
         if(this.userRepository.findByEmail(userRegisterDTO.email()) != null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Usuário já registrado");
         }
 
         var encryptedPassword = new BCryptPasswordEncoder().encode(userRegisterDTO.password());
 
-        User newUser =  new User(userRegisterDTO.name(), userRegisterDTO.email(), encryptedPassword, userRegisterDTO.address(), userRegisterDTO.profile());
+        User user =  new User(userRegisterDTO);
+        user.setPassword(encryptedPassword);
 
-        this.userRepository.save(newUser);
+        this.userRepository.save(user);
 
-        return ResponseEntity.ok(newUser);
+        var uri = uriComponentsBuilder.path("/users/{id}").buildAndExpand(user.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(user);
     }
 
     /** Métodos para atualizar infos de um usuário
@@ -72,10 +75,13 @@ public class UserService implements UserDetailsService {
      */
     @Transactional
     public ResponseEntity updateUser(Long id, UserUpdateDTO userUpdateDTO) {
-        var user = userRepository.getReferenceById(id);
-        userRepository.save(user);
+        if (userRepository.existsById(id)) {
+            var user = new User(userUpdateDTO);
+            userRepository.save(user);
+            return ResponseEntity.ok(user);
+        }
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.badRequest().body("Usuário não encontrado");
     }
 
     /** Métodos para deletar usuário
