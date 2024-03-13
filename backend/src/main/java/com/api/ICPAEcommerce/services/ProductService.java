@@ -1,16 +1,13 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.file.UpdateRequest;
-import com.api.ICPAEcommerce.domain.file.UploadResquestResult;
 import com.api.ICPAEcommerce.domain.product.*;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /** Classe de serviços para regras de negócio sobre Produtos

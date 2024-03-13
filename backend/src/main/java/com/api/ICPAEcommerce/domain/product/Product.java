@@ -1,12 +1,8 @@
 package com.api.ICPAEcommerce.domain.product;
 
-import com.api.ICPAEcommerce.domain.file.FileReference;
-import com.api.ICPAEcommerce.domain.file.FileReferenceDTO;
 import com.api.ICPAEcommerce.domain.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 /** Entidade de Produto
  *
