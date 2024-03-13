@@ -1,5 +1,6 @@
 package com.api.ICPAEcommerce.controllers;
 
+import com.api.ICPAEcommerce.domain.file.UpdateRequest;
 import com.api.ICPAEcommerce.domain.product.*;
 import com.api.ICPAEcommerce.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

@@ -1,9 +1,12 @@
 package com.api.ICPAEcommerce.domain.product;
 
 import com.api.ICPAEcommerce.domain.file.FileReference;
+import com.api.ICPAEcommerce.domain.file.FileReferenceDTO;
 import com.api.ICPAEcommerce.domain.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 /** Entidade de Produto
  *
@@ -28,9 +31,6 @@ public class Product {
     private double price;
     private int quantity;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private FileReference file;
-
     @Enumerated(EnumType.STRING)
     private EnumProductCategory enumProductCategory;
 
@@ -44,7 +44,6 @@ public class Product {
         this.price = productDTO.price();
         this.quantity = productDTO.quantity();
         this.enumProductCategory = productDTO.enumProductCategory();
-        this.file = productDTO.file();
     }
 
     public void update(UpdateProductDTO productDTO) {
@@ -62,9 +61,6 @@ public class Product {
         }
         if (productDTO.quantity() != 0) {
             this.quantity = productDTO.quantity();
-        }
-        if (productDTO.file() != null) {
-            this.file = productDTO.file();
         }
     }
 }

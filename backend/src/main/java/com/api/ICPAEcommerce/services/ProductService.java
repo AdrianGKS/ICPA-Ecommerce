@@ -1,7 +1,10 @@
 package com.api.ICPAEcommerce.services;
 
+import com.api.ICPAEcommerce.domain.file.UpdateRequest;
+import com.api.ICPAEcommerce.domain.file.UploadResquestResult;
 import com.api.ICPAEcommerce.domain.product.*;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,13 +29,15 @@ public class ProductService {
      * @return 201 - produto criado
      */
     @Transactional
-    public ResponseEntity register(ProductDTO productDTO, UriComponentsBuilder builder) {
+    public ResponseEntity register(ProductDTO productDTO,
+                                   UriComponentsBuilder builder) {
         var product = new Product(productDTO);
         productRepository.save(product);
 
         var uri =  builder.path("/products/{id}").buildAndExpand(product.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(new DetailProductDTO(product));
+        return ResponseEntity.created(uri)
+                .body(new DetailProductDTO(product));
     }
 
     /** Listagem de todos os produtos

@@ -1,5 +1,7 @@
 package com.api.ICPAEcommerce.domain.product;
 
+import com.api.ICPAEcommerce.domain.file.UploadResquestResult;
+
 public record DetailProductDTO (
         Long id,
         String code,
