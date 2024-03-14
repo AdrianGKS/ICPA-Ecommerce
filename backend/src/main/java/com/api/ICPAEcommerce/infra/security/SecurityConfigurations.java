@@ -40,7 +40,7 @@ public class SecurityConfigurations {
                 .requestMatchers(HttpMethod.GET, "/api/v1/products/list-products/category/{category}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/products/list-product/code/{code}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/products/total-stock-value").permitAll()
-                .requestMatchers(HttpMethod.PUT, "/api/v1/products/update-product").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/v1/products/update-product/{id}").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/products/delete-product/{code}").permitAll()
 
                 .requestMatchers(HttpMethod.POST, "/api/v1/orders/create-order").permitAll()

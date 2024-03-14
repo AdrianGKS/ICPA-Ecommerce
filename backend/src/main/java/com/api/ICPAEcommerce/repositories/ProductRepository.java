@@ -17,6 +17,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Product findByCode(String code);
 
+    boolean existsByCode(String code);
+
     @Query("""
         select p from Product p where p.name like %:name%
     """)

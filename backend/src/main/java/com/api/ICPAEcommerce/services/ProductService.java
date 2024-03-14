@@ -2,13 +2,17 @@ package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.product.*;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.math.BigDecimal;
 
 /** Classe de serviços para regras de negócio sobre Produtos
  *
@@ -26,15 +30,16 @@ public class ProductService {
      * @return 201 - produto criado
      */
     @Transactional
-    public ResponseEntity register(ProductDTO productDTO,
-                                   UriComponentsBuilder builder) {
+    public ResponseEntity register(ProductDTO productDTO, UriComponentsBuilder builder) {
+        if (productRepository.existsByCode(productDTO.code())) {
+            return ResponseEntity.badRequest().body("Código já cadastrado!");
+        }
         var product = new Product(productDTO);
         productRepository.save(product);
 
         var uri =  builder.path("/products/{id}").buildAndExpand(product.getId()).toUri();
 
-        return ResponseEntity.created(uri)
-                .body(new DetailProductDTO(product));
+        return ResponseEntity.created(uri).body(new DetailProductDTO(product));
     }
 
     /** Listagem de todos os produtos
@@ -82,9 +87,12 @@ public class ProductService {
      * @return 200 - valor total do estoque
      */
     public ResponseEntity totalStockValue() {
+        if (productRepository.totalStockValue() == null) {
+            return ResponseEntity.ok(new TotalStockDTO(new BigDecimal("0.00")));
+        }
         var totalValue =  productRepository.totalStockValue();
 
-        return ResponseEntity.ok(totalValue);
+        return ResponseEntity.ok(new TotalStockDTO(totalValue).toString());
     }
 
     /** Atualização de informações de um produtos
@@ -92,9 +100,14 @@ public class ProductService {
      * @return 200 - produto com infos atualizadas
      */
     @Transactional
-    public ResponseEntity updateProduct(UpdateProductDTO productDTO) {
-        var product = productRepository.getReferenceById(productDTO.id());
-        product.update(productDTO);
+    public ResponseEntity updateProduct(Long id, UpdateProductDTO productDTO) {
+        var existingProduct = productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
+
+        // Copia as propriedades atualizáveis do DTO para a entidade existente
+        BeanUtils.copyProperties(productDTO, existingProduct);
+
+        var product = productRepository.save(existingProduct);
 
         return ResponseEntity.ok(new DetailProductDTO(product));
     }
@@ -104,14 +117,13 @@ public class ProductService {
      * @return 204 - sem conteúdo/produto é deletado
      */
     @Transactional
-    public ResponseEntity deleteProduct(String code) {
-        var product = productRepository.findByCode(code);
-
-        if (product != null) {
-            productRepository.delete(product);
+    public ResponseEntity deleteProduct(Long id) {
+        if (productRepository.existsById(id)) {
+            productRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.notFound().build();
     }
 
 }
