@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Stream;
 
 /** Classe de serviços para regras de negócio sobre Produtos
  *
@@ -87,12 +90,13 @@ public class ProductService {
      * @return 200 - valor total do estoque
      */
     public ResponseEntity totalStockValue() {
-        if (productRepository.totalStockValue() == null) {
-            return ResponseEntity.ok(new TotalStockDTO(new BigDecimal("0.00")));
+        var product = productRepository.findAll();
+        double total = 0;
+        for(Product p : product) {
+            total += p.getPrice() * p.getQuantity();
         }
-        var totalValue =  productRepository.totalStockValue();
 
-        return ResponseEntity.ok(new TotalStockDTO(totalValue).toString());
+        return ResponseEntity.ok(new TotalStockDTO(total));
     }
 
     /** Atualização de informações de um produtos
@@ -103,13 +107,10 @@ public class ProductService {
     public ResponseEntity updateProduct(Long id, UpdateProductDTO productDTO) {
         var existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
+        existingProduct.update(productDTO);
+        productRepository.save(existingProduct);
 
-        // Copia as propriedades atualizáveis do DTO para a entidade existente
-        BeanUtils.copyProperties(productDTO, existingProduct);
-
-        var product = productRepository.save(existingProduct);
-
-        return ResponseEntity.ok(new DetailProductDTO(product));
+        return ResponseEntity.ok(new DetailProductDTO(existingProduct));
     }
 
     /** Deleção de produto por código
