@@ -1,6 +1,8 @@
 package com.api.ICPAEcommerce.infra.s3;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -12,32 +14,24 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.net.URI;
 
+@Slf4j
 @Configuration
+@RequiredArgsConstructor
+@EnableConfigurationProperties(StorageProperties.class)
 public class S3Config {
 
-    // Apontando para as novas chaves exigidas pelo StorageProperties
-    @Value("${aw.storage.s3.key-id}")
-    private String accessKey;
-
-    @Value("${aw.storage.s3.key-secret}")
-    private String secretKey;
-
-    @Value("${aw.storage.s3.endpoint}")
-    private String endpoint;
+    // A dependência é injetada via construtor, substituindo múltiplos @Value
+    private final StorageProperties storageProperties;
 
     @Bean
     public S3Client s3Client() {
-        System.out.println("[DEBUG] accessKey=" + accessKey);
-        System.out.println("[DEBUG] secretKey=" + secretKey);
-        System.out.println("[DEBUG] endpoint=" + endpoint);
+        log.debug("Inicializando S3Client com endpoint: {}", storageProperties.s3().endpoint());
 
         return S3Client.builder()
-                .endpointOverride(URI.create(endpoint))
-                .region(Region.US_EAST_1)
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)
-                ))
-                .forcePathStyle(true)
+                .endpointOverride(URI.create(storageProperties.s3().endpoint()))
+                .region(Region.of(storageProperties.s3().region())) // Região dinâmica
+                .credentialsProvider(getCredentialsProvider())
+                .forcePathStyle(true) // Necessário para compatibilidade com MinIO
                 .build();
     }
 
@@ -48,12 +42,20 @@ public class S3Config {
                 .build();
 
         return S3Presigner.builder()
-                .endpointOverride(URI.create(endpoint))
-                .region(Region.US_EAST_1)
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)
-                ))
+                .endpointOverride(URI.create(storageProperties.s3().endpoint()))
+                .region(Region.of(storageProperties.s3().region()))
+                .credentialsProvider(getCredentialsProvider())
                 .serviceConfiguration(serviceConfiguration)
                 .build();
+    }
+
+    // Metodo privado para evitar repetição do Builder de credenciais
+    private StaticCredentialsProvider getCredentialsProvider() {
+        return StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(
+                        storageProperties.s3().keyId(),
+                        storageProperties.s3().keySecret()
+                )
+        );
     }
 }
