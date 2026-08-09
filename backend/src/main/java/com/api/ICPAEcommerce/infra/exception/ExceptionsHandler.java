@@ -3,30 +3,47 @@ package com.api.ICPAEcommerce.infra.exception;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.net.URI;
+import java.util.List;
+
 @RestControllerAdvice
 public class ExceptionsHandler {
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> error404() {
-        return new ResponseEntity<String>("Não encontrado", HttpStatus.NOT_FOUND);
+    // Trata ambos os erros de "não encontrado" com o status 404 correto
+    @ExceptionHandler({EntityNotFoundException.class, EmptyResultDataAccessException.class})
+    public ProblemDetail handleNotFound(Exception ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "Recurso não encontrado.");
+        problemDetail.setTitle("Recurso não encontrado");
+        return problemDetail;
+    }
+
+    // Tratamento padronizado para erros de nuvem (Bad Gateway indica falha em serviço externo)
+    @ExceptionHandler(StorageIntegrationException.class)
+    public ProblemDetail handleStorageIntegration(StorageIntegrationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, ex.getMessage());
+        problemDetail.setTitle("Erro de Integração com Storage");
+        return problemDetail;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity error400(MethodArgumentNotValidException ex) {
-        var error = ex.getFieldErrors();
+    public ProblemDetail handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "A requisição possui campos inválidos.");
+        problemDetail.setTitle("Erro de Validação");
 
-        return ResponseEntity.badRequest().body(error.stream().map(ErrorData::new).toList());
-    }
+        List<ErrorData> errors = ex.getFieldErrors().stream()
+                .map(ErrorData::new)
+                .toList();
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<String> error500(EmptyResultDataAccessException ex) {
-        return new ResponseEntity<String>("Não encontrado", HttpStatus.INTERNAL_SERVER_ERROR);
+        // Adicionamos a lista de campos com erro ao payload padrão do ProblemDetail
+        problemDetail.setProperty("invalid_params", errors);
+
+        return problemDetail;
     }
 
     private record ErrorData(String field, String message) {

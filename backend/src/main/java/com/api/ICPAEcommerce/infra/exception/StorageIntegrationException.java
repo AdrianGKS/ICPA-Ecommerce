@@ -1,8 +1,8 @@
 package com.api.ICPAEcommerce.infra.exception;
 
-import software.amazon.awssdk.core.exception.SdkException;
-
+// Agora ela aceita qualquer causa (Throwable), ignorando se é da AWS, Azure ou GCP
 public class StorageIntegrationException extends RuntimeException {
-    public StorageIntegrationException(String s, SdkException e) {
+    public StorageIntegrationException(String message, Throwable cause) {
+        super(message, cause); // Repassando para a superclasse para manter o Stack Trace
     }
 }

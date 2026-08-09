@@ -2,7 +2,6 @@ package com.api.ICPAEcommerce.controllers;
 
 import com.api.ICPAEcommerce.domain.file.UpdateRequest;
 import com.api.ICPAEcommerce.domain.file.UploadResquestResult;
-import com.api.ICPAEcommerce.repositories.FileReferenceRepository;
 import com.api.ICPAEcommerce.services.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,7 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,62 +21,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/files")
 @Tag(name = "File Requests")
-@AllArgsConstructor
+@RequiredArgsConstructor // Usar RequiredArgsConstructor ao invés de AllArgsConstructor
 public class FileController {
 
     private final StorageService storageService;
-    private final FileReferenceRepository fileReferenceRepository;
-
-
-//    @Operation(summary = "Rota responsável pelo upload de documentos")
-//    @ApiResponses(value = {
-//            @ApiResponse(
-//                    responseCode = "200",
-//                    description = "ID de referência e URL de upload.",
-//                    content = { @Content(
-//                            mediaType = "application/json",
-//                            schema = @Schema(implementation = UploadResquestResult.class)
-//                    )
-//                    }
-//            ),
-//            @ApiResponse(
-//                    responseCode = "400",
-//                    content = { @Content(
-//                            mediaType = "application/json",
-//                            schema = @Schema(implementation = ResponseEntity.class)
-//                    )
-//                    }
-//            )
-//    })
-//    @PostMapping("/documents")
-//    public UploadResquestResult newDocumentUploadRequest(@RequestBody @Valid UpdateDocumentRequest request) {
-//        return this.storageService.generateUploadUrl(request.toDomain());
-//    }
+    // Repository removido. O Controller conversa apenas com o Service.
 
     @Operation(summary = "Rota responsável pelo upload de imagens")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201", // Mudei para 201 (Created) pois um registro é criado
                     description = "ID de referência e URL de upload.",
-                    content = { @Content(
+                    content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = UploadResquestResult.class)
                     )
-                    }
             ),
             @ApiResponse(
                     responseCode = "400",
-                    content = { @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseEntity.class)
-                    )
-                    }
+                    description = "Requisição inválida.",
+                    content = @Content(mediaType = "application/problem+json")
             )
     })
     @PostMapping("/images")
-    public UploadResquestResult newUploadRequest(@RequestBody @Valid UpdateRequest request) {
-        return this.storageService.generateUploadUrl(request.toDomain());
+    public ResponseEntity<UploadResquestResult> newUploadRequest(@RequestBody @Valid UpdateRequest request) {
+        var result = this.storageService.generateUploadUrl(request.toDomain());
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
+}
 
 //    @Operation(summary = "Rota responsável pelo download de arquivos")
 //    @ApiResponses(value = {
@@ -124,4 +96,28 @@ public class FileController {
 //
 //    }
 
-}
+    //    @Operation(summary = "Rota responsável pelo upload de documentos")
+//    @ApiResponses(value = {
+//            @ApiResponse(
+//                    responseCode = "200",
+//                    description = "ID de referência e URL de upload.",
+//                    content = { @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = UploadResquestResult.class)
+//                    )
+//                    }
+//            ),
+//            @ApiResponse(
+//                    responseCode = "400",
+//                    content = { @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = ResponseEntity.class)
+//                    )
+//                    }
+//            )
+//    })
+//    @PostMapping("/documents")
+//    public UploadResquestResult newDocumentUploadRequest(@RequestBody @Valid UpdateDocumentRequest request) {
+//        return this.storageService.generateUploadUrl(request.toDomain());
+//    }
+
