@@ -3,6 +3,7 @@ package com.api.ICPAEcommerce.domain.product;
 import com.api.ICPAEcommerce.domain.file.FileReference;
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -13,8 +14,8 @@ public record UpdateProductDTO(
         String code,
         String name,
         String description,
-        double price,
-        int quantity,
+        BigDecimal price,
+        Integer quantity,
         @NotNull
         List<FileReference> files
 ) {

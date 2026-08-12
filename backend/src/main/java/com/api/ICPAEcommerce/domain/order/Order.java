@@ -5,7 +5,9 @@ import com.api.ICPAEcommerce.domain.product.Product;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity(name = "Order")
 @Table (name = "orders")
@@ -24,8 +26,8 @@ public class Order {
     private Double orderPrice;
     private EnumPaymenType paymentType;
 
-    @OneToMany
-    private List<Product> items;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Product> items = new ArrayList<>();
 
     @Embedded
     private Address address;
@@ -34,7 +36,19 @@ public class Order {
     private EnumOrderStatus status;
 
     public Order(OrderDTO orderDTO) {
-        this.items.add(orderDTO.items());
+        // Mapear itens do DTO para entidades Product e garantir relação bidirecional
+        if (orderDTO.items() != null) {
+            this.items = orderDTO.items().stream()
+                    .map(pdto -> {
+                        Product p = new Product(pdto);
+                        p.setOrder(this);
+                        return p;
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            this.items = new ArrayList<>();
+        }
+
         this.address = orderDTO.address();
         this.clientEmail = orderDTO.clientEmail();
         this.orderPrice = orderDTO.orderPrice();

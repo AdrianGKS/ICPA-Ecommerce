@@ -28,37 +28,42 @@ public class SecurityConfigurations {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
 
-                .requestMatchers(HttpMethod.POST, "/api/v1/users/register").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/users/list-users").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/v1/users/list-user/{id}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/users/update-user/{id}").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/users/delete-user/{id}").hasRole("ADMIN")
+                        // USUÁRIOS (Público e Admin)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/list-users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/list-user/{id}").hasRole("ADMIN")
+                        // Idealmente, um usuário comum deveria poder atualizar/deletar o PRÓPRIO cadastro.
+                        // Abordaremos isso mais abaixo.
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/update-user/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/delete-user/{id}").hasRole("ADMIN")
 
-                .requestMatchers(HttpMethod.POST, "/api/v1/products/register-product").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/products/list-products").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/products/list-products/name/{name}").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/products/list-products/category/{category}").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/products/list-product/code/{code}").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/products/total-stock-value").permitAll()
-                .requestMatchers(HttpMethod.PUT, "/api/v1/products/update-product").permitAll()
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/products/delete-product/{code}").permitAll()
+                        // PRODUTOS
+                        // Apenas leitura é pública. Escrita requer ADMIN.
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/list-products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/list-product/code/{code}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/total-stock-value").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/products/register-product").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/products/update-product").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/products/delete-product/{code}").hasRole("ADMIN")
 
-                .requestMatchers(HttpMethod.POST, "/api/v1/orders/create-order").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/orders/list-order/{id}").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/orders/list-orders").permitAll()
-                .requestMatchers(HttpMethod.PUT, "/api/v1/orders/update-status/{id}").permitAll()
+                        // PEDIDOS
+                        // Criar pedido exige estar logado. Ver todos os pedidos e atualizar status exige ADMIN.
+                        .requestMatchers(HttpMethod.POST, "/api/v1/orders/create-order").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/orders/list-order/{id}").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/orders/list-orders").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/orders/update-status/{id}").hasRole("ADMIN")
 
-                .requestMatchers(HttpMethod.POST, "/api/v1/authentication/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/authentication/forgot-password").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/authentication/change-password").permitAll()
+                        // AUTENTICAÇÃO E RECUPERAÇÃO DE SENHA (Mantém-se público)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/authentication/**").permitAll()
 
-                .requestMatchers(HttpMethod.POST, "/api/v1/files/images").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/files/documents").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/files/downloads/{fileReferenceId}/{fileName}").permitAll()
+                        // ARQUIVOS
+                        .requestMatchers(HttpMethod.GET, "/api/v1/files/downloads/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/files/**").hasRole("ADMIN")
 
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                        // SWAGGER
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
 
-                .anyRequest().authenticated())
+                        .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

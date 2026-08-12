@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +19,16 @@ import java.util.Optional;
 public class OrderService {
 
     private OrderRepository orderRepository;
+
+    @Transactional(readOnly = true)
+    public List<Order> listOrders() {
+        return orderRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Order> findById(Long id) {
+        return orderRepository.findById(id);
+    }
 
     @Transactional
     public ResponseEntity saveOrder(OrderDTO orderDTO) {
@@ -32,15 +43,17 @@ public class OrderService {
     public ResponseEntity updateOrder(Long id, OrderDTO orderDTO) {
         Optional<Order> orderOptional = orderRepository.findById(id);
 
-        if (orderOptional == null){
+        if (orderOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cadastro pelo ID " + id + " inexistente!");
-        } else {
-            BeanUtils.copyProperties(orderDTO, orderOptional);
-            orderOptional.get().setStatus(orderDTO.status());
-            orderRepository.save(orderOptional.get());
-
-            return ResponseEntity.status(HttpStatus.OK).body("Status do ID " + id + " alterado para "+ orderDTO.status() +" com sucesso!");
         }
+
+        Order order = orderOptional.get();
+        // Atualiza apenas campos permitidos (ex.: status). Evitar copiar DTO direto para Optional
+        order.setStatus(orderDTO.status());
+        // se for necessário atualizar outros campos, mapear explicitamente aqui
+        orderRepository.save(order);
+
+        return ResponseEntity.status(HttpStatus.OK).body(order);
 
     }
 

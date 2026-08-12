@@ -10,12 +10,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    Product findByCode(String code);
+    Optional<Product> findByCode(String code);
 
     @Query("""
         select p from Product p where p.name like %:name%

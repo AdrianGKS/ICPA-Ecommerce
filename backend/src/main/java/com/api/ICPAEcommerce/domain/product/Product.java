@@ -3,7 +3,7 @@ package com.api.ICPAEcommerce.domain.product;
 import com.api.ICPAEcommerce.domain.order.Order;
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.math.BigDecimal;
 /** Entidade de Produto
  *
  * @author Adrian Gabriel K. dos Santos
@@ -24,8 +24,9 @@ public class Product {
     private String code;
     private String name;
     private String description;
-    private double price;
-    private int quantity;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal price;
+    private Integer quantity;
 
     @Enumerated(EnumType.STRING)
     private EnumProductCategory enumProductCategory;
@@ -52,10 +53,10 @@ public class Product {
         if (productDTO.description() != null) {
             this.description = productDTO.description();
         }
-        if (productDTO.price() != 0) {
+        if (productDTO.price() != null) {
             this.price = productDTO.price();
         }
-        if (productDTO.quantity() != 0) {
+        if (productDTO.quantity() != null) {
             this.quantity = productDTO.quantity();
         }
     }

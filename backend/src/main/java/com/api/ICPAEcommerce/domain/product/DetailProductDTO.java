@@ -1,12 +1,14 @@
 package com.api.ICPAEcommerce.domain.product;
 
+import java.math.BigDecimal;
+
 public record DetailProductDTO (
         Long id,
         String code,
         String name,
         String description,
-        double price,
-        int quantity,
+        BigDecimal price,
+        Integer quantity,
         EnumProductCategory enumProductCategory
 
 ){

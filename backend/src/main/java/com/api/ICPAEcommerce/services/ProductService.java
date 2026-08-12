@@ -69,12 +69,12 @@ public class ProductService {
 
     /** Listagem de produtos por código
      *
-     * @return 200 - produto por código
+     * @return 200 - produto por código ou 404 se não encontrado
      */
     public ResponseEntity listProductByCode(String code) {
         var product = productRepository.findByCode(code);
-
-        return ResponseEntity.ok(product);
+        return product.map(p -> ResponseEntity.ok().body((Object) new DetailProductDTO(p)))
+                      .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /** Valor total do estoque
@@ -101,17 +101,18 @@ public class ProductService {
 
     /** Deleção de produto por código
      *
-     * @return 204 - sem conteúdo/produto é deletado
+     * @return 204 - sem conteúdo/produto é deletado, 404 se não encontrado
      */
     @Transactional
     public ResponseEntity deleteProduct(String code) {
-        var product = productRepository.findByCode(code);
+        var optional = productRepository.findByCode(code);
 
-        if (product != null) {
-            productRepository.delete(product);
+        if (optional.isPresent()) {
+            productRepository.delete(optional.get());
+            return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.notFound().build();
     }
 
 }

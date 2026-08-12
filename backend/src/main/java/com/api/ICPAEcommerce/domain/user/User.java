@@ -39,7 +39,7 @@ public class User implements UserDetails {
         this.email = userRegisterDTO.email();
         this.password = userRegisterDTO.password();
         this.address = new Address(userRegisterDTO.address());
-        this.profile = userRegisterDTO.profile();
+        this.profile = EnumUserProfile.USER;
     }
 
     public User(UserUpdateDTO userUpdateDTO) {

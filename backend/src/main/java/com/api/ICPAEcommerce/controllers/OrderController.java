@@ -6,7 +6,7 @@ import com.api.ICPAEcommerce.services.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +16,12 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 @SecurityRequirement(name = "bearer-key")
 @Tag(name = "Order")
+@RequiredArgsConstructor
 public class OrderController {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @PostMapping("/create-order")
     public ResponseEntity createOrder(@RequestBody @Valid OrderDTO orderDTO) {
@@ -34,16 +33,14 @@ public class OrderController {
     @GetMapping("/list-orders")
     @ResponseBody
     public ResponseEntity listOrders() {
-        var orders = orderRepository.findAll();
-
+        var orders = orderService.listOrders();
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/detail-order/{id}")
     @ResponseBody
     public ResponseEntity detailOrder(@PathVariable Long id) {
-        var order = orderRepository.findById(id);
-
+        var order = orderService.findById(id);
         return ResponseEntity.ok(order);
     }
 

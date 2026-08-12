@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,13 +26,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/api/v1/users")
 @Tag(name = "User Requests")
 @SecurityRequirement(name = "bearer-key")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Operation(summary = "Rota responsável pelo cadastro de usuário")
     @ApiResponses(value = {
@@ -57,8 +56,10 @@ public class UserController {
     })
    @PostMapping("/register")
     public ResponseEntity registerUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO, UriComponentsBuilder uriComponentsBuilder) {
-       return userService.saveUser(userRegisterDTO, uriComponentsBuilder);
-   }
+       var user = userService.registerUser(userRegisterDTO);
+       var uri = uriComponentsBuilder.path("/api/v1/users/{id}").buildAndExpand(user.getId()).toUri();
+       return ResponseEntity.created(uri).body(user);
+    }
 
     @Operation(summary = "Rota responsável pela listagem de usuários")
     @ApiResponses(value = {
@@ -84,11 +85,10 @@ public class UserController {
     @GetMapping("/list-users")
     @ResponseBody
     public ResponseEntity listUsers() {
-        var users = userRepository.findAll();
-        if(!users.isEmpty()) {
+        var users = userService.listUsers();
+        if (!users.isEmpty()) {
             return ResponseEntity.ok(users);
         }
-
         return ResponseEntity.ok("Não há usuários cadastrados");
     }
 
@@ -117,11 +117,10 @@ public class UserController {
     @GetMapping("/list-user/{userId}")
     @ResponseBody
     public ResponseEntity listUserById(@PathVariable Long userId) {
-        if (userRepository.existsById(userId)) {
-            var user = userRepository.getReferenceById(userId);
-            return ResponseEntity.ok(user);
+        var optional = userService.findById(userId);
+        if (optional.isPresent()) {
+            return ResponseEntity.ok(optional.get());
         }
-
         return ResponseEntity.badRequest().body("Usuário não encontrado");
     }
 
@@ -177,7 +176,8 @@ public class UserController {
     })
     @DeleteMapping("/delete-user/{userId}")
     public ResponseEntity deleteUser(@PathVariable Long userId) {
-        if (userRepository.existsById(userId)) {
+        var optional = userService.findById(userId);
+        if (optional.isPresent()) {
             userService.deleteUser(userId);
             return ResponseEntity.ok("Usuário excluído com sucesso!");
         }
