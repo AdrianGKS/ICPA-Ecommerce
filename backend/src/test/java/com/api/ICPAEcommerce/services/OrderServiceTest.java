@@ -1,8 +1,8 @@
 package com.api.ICPAEcommerce.services;
 
+import com.api.ICPAEcommerce.domain.order.EnumOrderStatus;
 import com.api.ICPAEcommerce.domain.order.Order;
 import com.api.ICPAEcommerce.domain.order.OrderDTO;
-import com.api.ICPAEcommerce.domain.order.EnumOrderStatus;
 import com.api.ICPAEcommerce.repositories.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,12 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,14 +60,14 @@ class OrderServiceTest {
     @Test
     @DisplayName("Deve listar todos os pedidos")
     void testListOrders() {
-        List<Order> orders = Arrays.asList(order);
+        List<Order> orders = Collections.singletonList(order);
         when(orderRepository.findAll()).thenReturn(orders);
 
         List<Order> result = orderService.listOrders();
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("customer@example.com", result.get(0).getClientEmail());
+        assertEquals("customer@example.com", result.getFirst().getClientEmail());
         verify(orderRepository, times(1)).findAll();
     }
 

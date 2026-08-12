@@ -1,9 +1,8 @@
 package com.api.ICPAEcommerce.services;
 
+import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
 import com.api.ICPAEcommerce.domain.product.Product;
 import com.api.ICPAEcommerce.domain.product.ProductDTO;
-import com.api.ICPAEcommerce.domain.product.UpdateProductDTO;
-import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +19,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -125,7 +125,7 @@ class ProductServiceTest {
     @Test
     @DisplayName("Deve listar todos os produtos com paginação")
     void testListProducts() {
-        Page<Product> page = new PageImpl<>(Arrays.asList(product));
+        Page<Product> page = new PageImpl<>(Collections.singletonList(product));
         when(productRepository.findAll(any(Pageable.class))).thenReturn(page);
 
         ResponseEntity<?> result = productService.listProducts(mock(Pageable.class));

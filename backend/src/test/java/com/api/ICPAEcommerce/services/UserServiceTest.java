@@ -1,8 +1,6 @@
 package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.user.User;
-import com.api.ICPAEcommerce.domain.user.UserRegisterDTO;
-import com.api.ICPAEcommerce.domain.user.address.AddressDTO;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,13 +11,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,14 +46,14 @@ class UserServiceTest {
     @Test
     @DisplayName("Deve listar todos os usuários")
     void testListUsers() {
-        List<User> users = Arrays.asList(user);
+        List<User> users = Collections.singletonList(user);
         when(userRepository.findAll()).thenReturn(users);
 
         List<User> result = userService.listUsers();
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals("test@example.com", result.get(0).getEmail());
+        assertEquals("test@example.com", result.getFirst().getEmail());
         verify(userRepository, times(1)).findAll();
     }
 
