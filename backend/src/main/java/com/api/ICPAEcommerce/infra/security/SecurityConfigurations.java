@@ -58,7 +58,7 @@ public class SecurityConfigurations {
 
                         // ARQUIVOS
                         .requestMatchers(HttpMethod.GET, "/api/v1/files/downloads/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/files/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/files/images").hasRole("ADMIN")
 
                         // SWAGGER
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()

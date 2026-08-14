@@ -39,6 +39,7 @@ public class S3Config {
     public S3Presigner s3Presigner() {
         S3Configuration serviceConfiguration = S3Configuration.builder()
                 .pathStyleAccessEnabled(true)
+                .useArnRegionEnabled(false)
                 .build();
 
         return S3Presigner.builder()
