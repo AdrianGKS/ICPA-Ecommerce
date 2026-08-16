@@ -1,4 +1,4 @@
-package com.api.ICPAEcommerce.domain.user.authentication;
+package com.api.ICPAEcommerce.domain.authentication;
 
 import com.api.ICPAEcommerce.domain.user.User;
 import jakarta.persistence.*;

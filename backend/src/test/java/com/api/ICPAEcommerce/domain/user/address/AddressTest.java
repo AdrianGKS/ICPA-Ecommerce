@@ -1,5 +1,7 @@
 package com.api.ICPAEcommerce.domain.user.address;
 
+import com.api.ICPAEcommerce.domain.address.Address;
+import com.api.ICPAEcommerce.dto.address.AddressDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

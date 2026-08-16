@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.user.User;
-import com.api.ICPAEcommerce.domain.user.authentication.PasswordResetToken;
+import com.api.ICPAEcommerce.domain.authentication.PasswordResetToken;
 import com.api.ICPAEcommerce.repositories.PasswordResetTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

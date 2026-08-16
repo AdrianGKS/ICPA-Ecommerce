@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.controllers;
 
-import com.api.ICPAEcommerce.domain.file.UpdateRequest;
-import com.api.ICPAEcommerce.domain.file.UploadResquestResult;
+import com.api.ICPAEcommerce.dto.file.UpdateRequest;
+import com.api.ICPAEcommerce.dto.file.UploadResquestResult;
 import com.api.ICPAEcommerce.services.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

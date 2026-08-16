@@ -1,6 +1,6 @@
 package com.api.ICPAEcommerce.infra.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,16 +17,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfigurations {
 
-    @Autowired
-    private SecurityFilter securityFilter;
+    private final SecurityFilter securityFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         return http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+
+                        // NOVA LINHA: Libera o preflight de CORS do Front-end
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // NOVA LINHA: Libera o Spring para mostrar a verdadeira mensagem de erro (401, 400, 404)
+                        .requestMatchers("/error").permitAll()
 
                         // USUÁRIOS (Público e Admin)
                         .requestMatchers(HttpMethod.POST, "/api/v1/users/register").permitAll()

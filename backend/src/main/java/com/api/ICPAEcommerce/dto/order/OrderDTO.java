@@ -1,7 +1,9 @@
-package com.api.ICPAEcommerce.domain.order;
+package com.api.ICPAEcommerce.dto.order;
 
-import com.api.ICPAEcommerce.domain.user.address.Address;
-import com.api.ICPAEcommerce.domain.product.ProductDTO;
+import com.api.ICPAEcommerce.domain.address.Address;
+import com.api.ICPAEcommerce.domain.order.EnumOrderStatus;
+import com.api.ICPAEcommerce.domain.order.EnumPaymenType;
+import com.api.ICPAEcommerce.dto.product.ProductDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;

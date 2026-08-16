@@ -2,8 +2,9 @@ package com.api.ICPAEcommerce.domain.order;
 
 import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
 import com.api.ICPAEcommerce.domain.product.Product;
-import com.api.ICPAEcommerce.domain.product.ProductDTO;
-import com.api.ICPAEcommerce.domain.user.address.Address;
+import com.api.ICPAEcommerce.dto.order.OrderDTO;
+import com.api.ICPAEcommerce.dto.product.ProductDTO;
+import com.api.ICPAEcommerce.domain.address.Address;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,8 @@
 package com.api.ICPAEcommerce.domain.user;
 
-import com.api.ICPAEcommerce.domain.user.address.Address;
-import com.api.ICPAEcommerce.domain.user.address.AddressDTO;
+import com.api.ICPAEcommerce.domain.address.Address;
+import com.api.ICPAEcommerce.dto.address.AddressDTO;
+import com.api.ICPAEcommerce.dto.user.UserRegisterDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,17 +32,23 @@ class UserTest {
     }
 
     @Test
-    @DisplayName("Criar usuário com perfil USER via UserRegisterDTO")
-    void shouldCreateUserWithRegisterDTO() {
-        UserRegisterDTO registerDTO = new UserRegisterDTO(
-            "Samuel Almeida",
-            "user003@icpaecommerce.com",
-            "123456",
-            addressDTO,
-            EnumUserProfile.USER
-        );
+    @DisplayName("Criar usuário com perfil USER")
+    void shouldCreateUserWithUserProfile() {
+        user = new User();
+        user.setName("Samuel Almeida");
+        user.setEmail("user003@icpaecommerce.com");
+        user.setPassword("123456");
+        user.setProfile(EnumUserProfile.USER);
 
-        user = new User(registerDTO);
+        Address address = new Address();
+        address.setStreet(addressDTO.street());
+        address.setNumber(addressDTO.number());
+        address.setCity(addressDTO.city());
+        address.setNeighborhood(addressDTO.neighborhood());
+        address.setState(addressDTO.state());
+        address.setCep(addressDTO.cep());
+        address.setComplement(addressDTO.complement());
+        user.setAddress(address);
 
         assertNotNull(user);
         assertEquals("Samuel Almeida", user.getName());
@@ -52,15 +59,21 @@ class UserTest {
     }
 
     @Test
-    @DisplayName("Atualizar usuário via UserUpdateDTO")
-    void shouldUpdateUserWithUpdateDTO() {
-        UserUpdateDTO updateDTO = new UserUpdateDTO(
-            "Updated Name",
-            "updated@example.com",
-            addressDTO
-        );
+    @DisplayName("Atualizar usuário manualmente")
+    void shouldUpdateUserFields() {
+        user = new User();
+        user.setName("Updated Name");
+        user.setEmail("updated@example.com");
 
-        user = new User(updateDTO);
+        Address address = new Address();
+        address.setStreet(addressDTO.street());
+        address.setNumber(addressDTO.number());
+        address.setCity(addressDTO.city());
+        address.setNeighborhood(addressDTO.neighborhood());
+        address.setState(addressDTO.state());
+        address.setCep(addressDTO.cep());
+        address.setComplement(addressDTO.complement());
+        user.setAddress(address);
 
         assertEquals("Updated Name", user.getName());
         assertEquals("updated@example.com", user.getEmail());
@@ -177,60 +190,49 @@ class UserTest {
             null
         );
 
-        UserRegisterDTO registerDTO = new UserRegisterDTO(
-            "Tatiane Souza",
-            "user002@icpaecommerce.com",
-            "password123",
-            completeAddressDTO,
-            EnumUserProfile.USER
-        );
+        Address address = new Address();
+        address.setStreet(completeAddressDTO.street());
+        address.setNumber(completeAddressDTO.number());
+        address.setCity(completeAddressDTO.city());
+        address.setNeighborhood(completeAddressDTO.neighborhood());
+        address.setState(completeAddressDTO.state());
+        address.setCep(completeAddressDTO.cep());
+        address.setComplement(completeAddressDTO.complement());
 
-        user = new User(registerDTO);
+        user = new User();
+        user.setName("Tatiane Souza");
+        user.setEmail("user002@icpaecommerce.com");
+        user.setPassword("password123");
+        user.setProfile(EnumUserProfile.USER);
+        user.setAddress(address);
 
         assertNotNull(user.getAddress());
         assertNull(user.getAddress().getComplement());
     }
 
     @Test
-    @DisplayName("Validação de email único não deve ser feita no construtor")
-    void emailUniquenessNotValidatedInConstructor() {
-        UserRegisterDTO dto1 = new UserRegisterDTO(
-            "User A",
-            "duplicate@example.com",
-            "pass",
-            addressDTO,
-            EnumUserProfile.USER
-        );
-        UserRegisterDTO dto2 = new UserRegisterDTO(
-            "User B",
-            "duplicate@example.com",
-            "pass",
-            addressDTO,
-            EnumUserProfile.USER
-        );
+    @DisplayName("Validação de email único não deve ser feita na entidade")
+    void emailUniquenessNotValidatedInEntity() {
+        User user1 = new User();
+        user1.setEmail("duplicate@example.com");
 
-        User user1 = new User(dto1);
-        User user2 = new User(dto2);
+        User user2 = new User();
+        user2.setEmail("duplicate@example.com");
 
         assertEquals(user1.getEmail(), user2.getEmail());
     }
 
     @Test
-    @DisplayName("Atualizar apenas nome mantém email anterior")
-    void updatingUserKeepsPreviousEmail() {
+    @DisplayName("Atualizar nome e email do usuário")
+    void updatingUserFieldsShouldChangeValues() {
         user = new User();
         user.setEmail("original@example.com");
 
-        UserUpdateDTO updateDTO = new UserUpdateDTO(
-            "New Name",
-            "newemail@example.com",
-            addressDTO
-        );
+        user.setName("New Name");
+        user.setEmail("newemail@example.com");
 
-        User updatedUser = new User(updateDTO);
-
-        assertEquals("New Name", updatedUser.getName());
-        assertEquals("newemail@example.com", updatedUser.getEmail());
+        assertEquals("New Name", user.getName());
+        assertEquals("newemail@example.com", user.getEmail());
     }
 }
 

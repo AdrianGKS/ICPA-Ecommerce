@@ -1,4 +1,4 @@
-package com.api.ICPAEcommerce.domain.product;
+package com.api.ICPAEcommerce.dto.product;
 
 import com.api.ICPAEcommerce.domain.file.FileReference;
 import jakarta.validation.constraints.NotNull;

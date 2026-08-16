@@ -1,5 +1,7 @@
-package com.api.ICPAEcommerce.domain.file;
+package com.api.ICPAEcommerce.dto.file;
 
+import com.api.ICPAEcommerce.domain.file.FileReference;
+import com.api.ICPAEcommerce.domain.file.Type;
 import com.api.ICPAEcommerce.domain.file.validation.AllowedContentTypes;
 import com.api.ICPAEcommerce.domain.file.validation.AllowedFileExtensions;
 import jakarta.validation.constraints.Min;

@@ -2,7 +2,7 @@ package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
 import com.api.ICPAEcommerce.domain.product.Product;
-import com.api.ICPAEcommerce.domain.product.ProductDTO;
+import com.api.ICPAEcommerce.dto.product.ProductDTO;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

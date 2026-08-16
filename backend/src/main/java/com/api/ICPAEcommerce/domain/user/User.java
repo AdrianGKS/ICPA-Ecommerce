@@ -1,7 +1,6 @@
 package com.api.ICPAEcommerce.domain.user;
 
-import com.api.ICPAEcommerce.domain.user.address.Address;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.api.ICPAEcommerce.domain.address.Address;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -14,7 +13,6 @@ import java.util.List;
 
 @Table(name = "users")
 @Entity(name = "User")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,31 +21,18 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_sequence_generator")
+    @SequenceGenerator(name = "users_sequence_generator", sequenceName = "users_seq")
     private Long id;
     private String name;
     private String email;
     private String password;
+
+    @Enumerated(EnumType.STRING)
     private EnumUserProfile profile;
 
     @Embedded
     private @Valid Address address;
-
-
-    public User(UserRegisterDTO userRegisterDTO) {
-        this.name = userRegisterDTO.name();
-        this.email = userRegisterDTO.email();
-        this.password = userRegisterDTO.password();
-        this.address = new Address(userRegisterDTO.address());
-        this.profile = EnumUserProfile.USER;
-    }
-
-    public User(UserUpdateDTO userUpdateDTO) {
-        this.name = userUpdateDTO.name();
-        this.email = userUpdateDTO.email();
-        this.address = new Address(userUpdateDTO.address());
-
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

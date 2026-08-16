@@ -1,5 +1,6 @@
-package com.api.ICPAEcommerce.domain.file;
+package com.api.ICPAEcommerce.dto.file;
 
+import com.api.ICPAEcommerce.domain.file.Type;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

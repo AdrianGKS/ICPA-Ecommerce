@@ -1,4 +1,4 @@
-package com.api.ICPAEcommerce.domain.user.authentication;
+package com.api.ICPAEcommerce.dto.authentication;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

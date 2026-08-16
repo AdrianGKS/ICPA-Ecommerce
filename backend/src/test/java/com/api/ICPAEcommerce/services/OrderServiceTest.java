@@ -2,7 +2,7 @@ package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.order.EnumOrderStatus;
 import com.api.ICPAEcommerce.domain.order.Order;
-import com.api.ICPAEcommerce.domain.order.OrderDTO;
+import com.api.ICPAEcommerce.dto.order.OrderDTO;
 import com.api.ICPAEcommerce.repositories.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

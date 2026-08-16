@@ -1,9 +1,10 @@
 package com.api.ICPAEcommerce.controllers;
 
 import com.api.ICPAEcommerce.domain.user.User;
-import com.api.ICPAEcommerce.domain.user.UserRegisterDTO;
-import com.api.ICPAEcommerce.domain.user.UserUpdateDTO;
-import com.api.ICPAEcommerce.repositories.UserRepository;
+import com.api.ICPAEcommerce.domain.user.mapper.UserMapper;
+import com.api.ICPAEcommerce.dto.user.UserRegisterDTO;
+import com.api.ICPAEcommerce.dto.user.UserResponseDTO;
+import com.api.ICPAEcommerce.dto.user.UserUpdateDTO;
 import com.api.ICPAEcommerce.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,20 +19,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /** Rest Controller para requisições de usuário
  * @author Adrian Gabriel K. dos Santos
  */
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/user")
 @Tag(name = "User Requests")
 @SecurityRequirement(name = "bearer-key")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Operation(summary = "Rota responsável pelo cadastro de usuário")
     @ApiResponses(value = {
@@ -55,10 +58,11 @@ public class UserController {
             )
     })
    @PostMapping("/register")
-    public ResponseEntity registerUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO, UriComponentsBuilder uriComponentsBuilder) {
-       var user = userService.registerUser(userRegisterDTO);
-       var uri = uriComponentsBuilder.path("/api/v1/users/{id}").buildAndExpand(user.getId()).toUri();
-       return ResponseEntity.created(uri).body(user);
+    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody @Valid UserRegisterDTO userRegisterDTO, UriComponentsBuilder uriComponentsBuilder) {
+        var savedUser = userService.registerUser(userRegisterDTO);
+        var response = userMapper.toResponse(savedUser);
+        var uri = uriComponentsBuilder.path("/api/v1/users/{id}").buildAndExpand(savedUser.getId()).toUri();
+        return ResponseEntity.created(uri).body(response);
     }
 
     @Operation(summary = "Rota responsável pela listagem de usuários")
@@ -84,12 +88,13 @@ public class UserController {
     })
     @GetMapping("/list-users")
     @ResponseBody
-    public ResponseEntity listUsers() {
+    public ResponseEntity<List<UserResponseDTO>> listUsers() {
         var users = userService.listUsers();
-        if (!users.isEmpty()) {
-            return ResponseEntity.ok(users);
+        var response = users.stream().map(userMapper::toResponse).collect(Collectors.toList());
+        if (response.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok("Não há usuários cadastrados");
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Rota responsável pela listagem de usuários por ID")
@@ -116,12 +121,10 @@ public class UserController {
     })
     @GetMapping("/list-user/{userId}")
     @ResponseBody
-    public ResponseEntity listUserById(@PathVariable Long userId) {
-        var optional = userService.findById(userId);
-        if (optional.isPresent()) {
-            return ResponseEntity.ok(optional.get());
-        }
-        return ResponseEntity.badRequest().body("Usuário não encontrado");
+    public ResponseEntity<UserResponseDTO> listUserById(@PathVariable Long userId) {
+        var user = userService.findById(userId);
+        var response = userMapper.toResponse(user);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Rota responsável pela atualização de usuários")
@@ -147,8 +150,10 @@ public class UserController {
             )
     })
     @PutMapping("/update-user/{userId}")
-    public ResponseEntity updateUser(@PathVariable Long userId, @RequestBody UserUpdateDTO userUpdateDTO) {
-        return userService.updateUser(userId, userUpdateDTO);
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long userId, @RequestBody UserUpdateDTO userUpdateDTO) {
+        var updatedUser = userService.updateUser(userId, userUpdateDTO);
+        var response = userMapper.toResponse(updatedUser);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Rota responsável por deletar usuários")
@@ -175,14 +180,9 @@ public class UserController {
             )
     })
     @DeleteMapping("/delete-user/{userId}")
-    public ResponseEntity deleteUser(@PathVariable Long userId) {
-        var optional = userService.findById(userId);
-        if (optional.isPresent()) {
-            userService.deleteUser(userId);
-            return ResponseEntity.ok("Usuário excluído com sucesso!");
-        }
-
-        return ResponseEntity.badRequest().body("Usuário não encontrado.");
-        }
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
+    }
 
 }

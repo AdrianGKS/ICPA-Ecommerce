@@ -1,6 +1,6 @@
-package com.api.ICPAEcommerce.domain.user;
+package com.api.ICPAEcommerce.dto.user;
 
-import com.api.ICPAEcommerce.domain.user.address.AddressDTO;
+import com.api.ICPAEcommerce.dto.address.AddressDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 

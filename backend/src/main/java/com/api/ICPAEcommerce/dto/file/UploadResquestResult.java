@@ -1,4 +1,4 @@
-package com.api.ICPAEcommerce.domain.file;
+package com.api.ICPAEcommerce.dto.file;
 
 public record UploadResquestResult(
 

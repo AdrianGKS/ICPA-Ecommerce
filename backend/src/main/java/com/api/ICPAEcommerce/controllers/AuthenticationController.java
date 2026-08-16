@@ -1,15 +1,16 @@
 package com.api.ICPAEcommerce.controllers;
 
 import com.api.ICPAEcommerce.domain.user.User;
-import com.api.ICPAEcommerce.domain.user.authentication.PasswordResetInputDTO;
-import com.api.ICPAEcommerce.domain.user.authentication.PasswordUpdateWithTokenInputDTO;
-import com.api.ICPAEcommerce.domain.user.authentication.TokenDTO;
-import com.api.ICPAEcommerce.domain.user.authentication.UserAuthenticationDTO;
+import com.api.ICPAEcommerce.dto.authentication.PasswordResetInputDTO;
+import com.api.ICPAEcommerce.dto.authentication.PasswordUpdateWithTokenInputDTO;
+import com.api.ICPAEcommerce.dto.authentication.TokenDTO;
+import com.api.ICPAEcommerce.dto.user.UserAuthenticationDTO;
 import com.api.ICPAEcommerce.infra.security.SecurityToken;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import com.api.ICPAEcommerce.services.UserService;
 import com.api.ICPAEcommerce.services.ResetPasswordService;
 import com.api.ICPAEcommerce.services.PasswordResetTokenService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/authentication")
+@SecurityRequirements()
 @Tag(name = "Authetication")
 public class AuthenticationController {
 

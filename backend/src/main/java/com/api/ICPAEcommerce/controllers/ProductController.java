@@ -1,9 +1,9 @@
 package com.api.ICPAEcommerce.controllers;
 
 import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
-import com.api.ICPAEcommerce.domain.product.ListProductDTO;
-import com.api.ICPAEcommerce.domain.product.ProductDTO;
-import com.api.ICPAEcommerce.domain.product.UpdateProductDTO;
+import com.api.ICPAEcommerce.dto.product.ListProductDTO;
+import com.api.ICPAEcommerce.dto.product.ProductDTO;
+import com.api.ICPAEcommerce.dto.product.UpdateProductDTO;
 import com.api.ICPAEcommerce.services.ProductService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

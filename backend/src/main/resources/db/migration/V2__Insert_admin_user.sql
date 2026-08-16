@@ -20,7 +20,7 @@ INSERT INTO users (
              'Admin Master',
              'admin@icpa.com',
              '$2a$10$/D97EOMjsQcJ7QOaz2Z6vejGM2CMpGHrcoN5bzhX6XFmteY.S0mZ.',
-             0,
+             'ADMIN',
              'Rua Exemplo',
              '100',
              'Porto Alegre',

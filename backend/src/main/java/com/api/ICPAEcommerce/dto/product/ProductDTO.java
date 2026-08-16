@@ -1,5 +1,6 @@
-package com.api.ICPAEcommerce.domain.product;
+package com.api.ICPAEcommerce.dto.product;
 
+import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

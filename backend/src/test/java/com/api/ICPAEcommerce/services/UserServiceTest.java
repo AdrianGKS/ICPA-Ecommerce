@@ -1,7 +1,10 @@
 package com.api.ICPAEcommerce.services;
 
+import com.api.ICPAEcommerce.domain.authentication.PasswordResetToken;
 import com.api.ICPAEcommerce.domain.user.User;
+import com.api.ICPAEcommerce.domain.user.mapper.UserMapper;
 import com.api.ICPAEcommerce.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -28,6 +32,9 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private UserMapper userMapper;
 
     @InjectMocks
     private UserService userService;
@@ -62,38 +69,86 @@ class UserServiceTest {
     void testFindById() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        Optional<User> result = userService.findById(1L);
+        User result = userService.findById(1L);
 
-        assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getId());
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("test@example.com", result.getEmail());
         verify(userRepository, times(1)).findById(1L);
     }
 
     @Test
-    @DisplayName("Deve retornar empty quando usuário não existe")
+    @DisplayName("Deve lançar exceção quando usuário não existe")
     void testFindByIdNotFound() {
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
-        Optional<User> result = userService.findById(999L);
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
+                () -> userService.findById(999L)
+        );
 
-        assertFalse(result.isPresent());
+        assertEquals("Usuário não encontrado.", exception.getMessage());
         verify(userRepository, times(1)).findById(999L);
     }
 
     @Test
     @DisplayName("Deve deletar usuário com sucesso")
     void testDeleteUser() {
-        doNothing().when(userRepository).deleteById(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        doNothing().when(userRepository).delete(user);
+
         userService.deleteUser(1L);
 
-        verify(userRepository, times(1)).deleteById(1L);
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).delete(user);
+        verify(userRepository, never()).deleteById(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao deletar usuário inexistente")
+    void testDeleteUserNotFound() {
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
+                () -> userService.deleteUser(999L)
+        );
+
+        assertEquals("Usuário não encontrado.", exception.getMessage());
+        verify(userRepository, times(1)).findById(999L);
+        verify(userRepository, never()).delete(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Deve carregar usuário pelo email")
+    void testLoadUserByUsername() {
+        when(userRepository.findByEmail("test@example.com")).thenReturn(user);
+
+        var result = userService.loadUserByUsername(" test@example.com ");
+
+        assertNotNull(result);
+        assertEquals("test@example.com", result.getUsername());
+        verify(userRepository, times(1)).findByEmail("test@example.com");
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao carregar usuário inexistente pelo email")
+    void testLoadUserByUsernameNotFound() {
+        when(userRepository.findByEmail("notfound@example.com")).thenReturn(null);
+
+        UsernameNotFoundException exception = assertThrows(
+                UsernameNotFoundException.class,
+                () -> userService.loadUserByUsername("notfound@example.com")
+        );
+
+        assertEquals("Usuário não encontrado em nosso sistema.", exception.getMessage());
+        verify(userRepository, times(1)).findByEmail("notfound@example.com");
     }
 
     @Test
     @DisplayName("Deve alterar senha com token válido")
     void testChangePasswordWithToken() {
-        com.api.ICPAEcommerce.domain.user.authentication.PasswordResetToken resetToken = 
-            new com.api.ICPAEcommerce.domain.user.authentication.PasswordResetToken();
+        PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setUser(user);
 
         when(passwordEncoder.encode("new_password")).thenReturn("encoded_new_password");
@@ -101,10 +156,8 @@ class UserServiceTest {
 
         userService.changePasswordWithToken("new_password", resetToken);
 
+        assertEquals("encoded_new_password", user.getPassword());
         verify(passwordEncoder, times(1)).encode("new_password");
-        verify(userRepository, times(1)).save(any(User.class));
+        verify(userRepository, times(1)).save(user);
     }
 }
-
-
-

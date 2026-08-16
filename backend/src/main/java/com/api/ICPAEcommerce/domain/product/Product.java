@@ -1,6 +1,8 @@
 package com.api.ICPAEcommerce.domain.product;
 
 import com.api.ICPAEcommerce.domain.order.Order;
+import com.api.ICPAEcommerce.dto.product.ProductDTO;
+import com.api.ICPAEcommerce.dto.product.UpdateProductDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;

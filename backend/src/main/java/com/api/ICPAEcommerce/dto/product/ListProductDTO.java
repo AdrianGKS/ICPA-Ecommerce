@@ -1,5 +1,8 @@
-package com.api.ICPAEcommerce.domain.product;
+package com.api.ICPAEcommerce.dto.product;
 
+
+import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
+import com.api.ICPAEcommerce.domain.product.Product;
 
 import java.math.BigDecimal;
 

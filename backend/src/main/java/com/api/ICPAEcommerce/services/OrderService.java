@@ -1,10 +1,9 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.order.OrderDTO;
+import com.api.ICPAEcommerce.dto.order.OrderDTO;
 import com.api.ICPAEcommerce.domain.order.Order;
 import com.api.ICPAEcommerce.repositories.OrderRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,7 @@
 package com.api.ICPAEcommerce.domain.file;
 
 import com.api.ICPAEcommerce.domain.product.Product;
+import com.api.ICPAEcommerce.dto.file.FileReferenceDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.file.FileReference;
-import com.api.ICPAEcommerce.domain.file.UploadResquestResult;
+import com.api.ICPAEcommerce.dto.file.UploadResquestResult;
 import com.api.ICPAEcommerce.infra.s3.CloudStorageProvider;
 import com.api.ICPAEcommerce.repositories.FileReferenceRepository;
 import lombok.RequiredArgsConstructor;

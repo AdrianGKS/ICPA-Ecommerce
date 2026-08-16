@@ -11,7 +11,7 @@ CREATE TABLE users (
                        name VARCHAR(255),
                        email VARCHAR(255),
                        password VARCHAR(255),
-                       profile SMALLINT,
+                       profile VARCHAR(255),
                        street VARCHAR(255),
                        number VARCHAR(255),
                        city VARCHAR(255),

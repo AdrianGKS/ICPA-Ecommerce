@@ -1,6 +1,10 @@
 package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.product.*;
+import com.api.ICPAEcommerce.dto.product.DetailProductDTO;
+import com.api.ICPAEcommerce.dto.product.ListProductDTO;
+import com.api.ICPAEcommerce.dto.product.ProductDTO;
+import com.api.ICPAEcommerce.dto.product.UpdateProductDTO;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
