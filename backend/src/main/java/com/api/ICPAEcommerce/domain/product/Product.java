@@ -1,15 +1,8 @@
 package com.api.ICPAEcommerce.domain.product;
 
-import com.api.ICPAEcommerce.domain.order.Order;
-import com.api.ICPAEcommerce.dto.product.ProductDTO;
-import com.api.ICPAEcommerce.dto.product.UpdateProductDTO;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-/** Entidade de Produto
- *
- * @author Adrian Gabriel K. dos Santos
- */
 
 @Table(name = "products")
 @Entity(name = "Product")
@@ -21,11 +14,14 @@ import java.math.BigDecimal;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "products_sequence_generator")
+    @SequenceGenerator(name = "products_sequence_generator", sequenceName = "products_seq", allocationSize = 50)
     private Long id;
+
     private String code;
     private String name;
     private String description;
+
     @Column(precision = 19, scale = 2)
     private BigDecimal price;
     private Integer quantity;
@@ -33,33 +29,12 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private EnumProductCategory enumProductCategory;
 
-    @ManyToOne
-    private Order order;
+    private Boolean active;
 
-    public Product(ProductDTO productDTO) {
-        this.code = productDTO.code();
-        this.name = productDTO.name();
-        this.description = productDTO.description();
-        this.price = productDTO.price();
-        this.quantity = productDTO.quantity();
-        this.enumProductCategory = productDTO.enumProductCategory();
-    }
+    @Version
+    private Long version;
 
-    public void update(UpdateProductDTO productDTO) {
-        if (productDTO.code() != null) {
-            this.code = productDTO.code();
-        }
-        if (productDTO.name() != null) {
-            this.name = productDTO.name();
-        }
-        if (productDTO.description() != null) {
-            this.description = productDTO.description();
-        }
-        if (productDTO.price() != null) {
-            this.price = productDTO.price();
-        }
-        if (productDTO.quantity() != null) {
-            this.quantity = productDTO.quantity();
-        }
+    public void deactivate() {
+        this.active = false;
     }
 }

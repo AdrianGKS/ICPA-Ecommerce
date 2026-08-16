@@ -5,6 +5,6 @@ public enum EnumOrderStatus {
     PENDING_PAYMENT,
     PROCESSING,
     SENT,
-    DELIVERED
-
+    DELIVERED,
+    CANCELED
 }

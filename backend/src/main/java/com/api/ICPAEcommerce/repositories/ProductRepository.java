@@ -32,5 +32,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         select sum(p.price) from Product p
     """)
     BigDecimal totalStockValue();
+    Page<Product> findByNameContainingIgnoreCaseAndActiveTrue(String name, Pageable pageable);
+    Page<Product> findByEnumProductCategoryAndActiveTrue(EnumProductCategory category, Pageable pageable);
+    Optional<Product> findByCodeAndActiveTrue(String code);
+    Page<Product> findAllByActiveTrue(Pageable pageable);
+    boolean existsByCode(String code);
+
 
 }

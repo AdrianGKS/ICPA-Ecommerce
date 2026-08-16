@@ -1,10 +1,11 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.product.*;
+import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
 import com.api.ICPAEcommerce.dto.product.DetailProductDTO;
 import com.api.ICPAEcommerce.dto.product.ListProductDTO;
 import com.api.ICPAEcommerce.dto.product.ProductDTO;
 import com.api.ICPAEcommerce.dto.product.UpdateProductDTO;
+import com.api.ICPAEcommerce.mappers.ProductMapper;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,109 +15,78 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
-/** Classe de serviços para regras de negócio sobre Produtos
- *
- * @author Adrian Gabriel K. dos Santos
- */
-
 @Service
 @AllArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
-    /** Registro de produto
-     *
-     * @return 201 - produto criado
-     */
     @Transactional
-    public ResponseEntity register(ProductDTO productDTO,
-                                   UriComponentsBuilder builder) {
-        var product = new Product(productDTO);
+    public ResponseEntity register(ProductDTO productDTO, UriComponentsBuilder builder) {
+        if (productRepository.existsByCode(productDTO.code())) {
+            return ResponseEntity.badRequest().body("Já existe um produto cadastrado com este código.");
+        }
+
+        var product = productMapper.toEntity(productDTO);
         productRepository.save(product);
 
-        var uri =  builder.path("/products/{id}").buildAndExpand(product.getId()).toUri();
+        var uri = builder.path("/api/v1/products/list-product/code/{code}")
+                .buildAndExpand(product.getCode()).toUri();
 
-        return ResponseEntity.created(uri)
-                .body(new DetailProductDTO(product));
+        return ResponseEntity.created(uri).body(productMapper.toDetailDTO(product));
     }
 
-    /** Listagem de todos os produtos
-     *
-     * @return 200 - lista de todos produtos
-     */
     public ResponseEntity<Page<ListProductDTO>> listProducts(Pageable pageable) {
-        var products = productRepository.findAll(pageable).map(ListProductDTO::new);
-
+        var products = productRepository.findAllByActiveTrue(pageable).map(productMapper::toListDTO);
         return ResponseEntity.ok(products);
     }
 
-    /** Listagem de produtos pelo nome
-     *
-     * @return 200 - lista de produtos pelo nome
-     */
     public ResponseEntity<Page<ListProductDTO>> listProductsByName(String name, Pageable pageable) {
-        var products = productRepository.findByNamePart(name, pageable).map(ListProductDTO::new);
-
+        var products = productRepository.findByNameContainingIgnoreCaseAndActiveTrue(name, pageable).map(productMapper::toListDTO);
         return ResponseEntity.ok(products);
     }
 
-    /** Listagem de produtos por categoria
-     *
-     * @return 200 - lista de produtos pela categoria
-     */
     public ResponseEntity<Page<ListProductDTO>> listProductsByCategory(EnumProductCategory category, Pageable pageable) {
-        var products = productRepository.findProductsByCategory(category, pageable).map(ListProductDTO::new);
-
+        var products = productRepository.findByEnumProductCategoryAndActiveTrue(category, pageable).map(productMapper::toListDTO);
         return ResponseEntity.ok(products);
     }
 
-    /** Listagem de produtos por código
-     *
-     * @return 200 - produto por código ou 404 se não encontrado
-     */
     public ResponseEntity listProductByCode(String code) {
-        var product = productRepository.findByCode(code);
-        return product.map(p -> ResponseEntity.ok().body((Object) new DetailProductDTO(p)))
-                      .orElseGet(() -> ResponseEntity.notFound().build());
+        var optional = productRepository.findByCodeAndActiveTrue(code);
+        return optional.map(product -> ResponseEntity.ok().body((Object) productMapper.toDetailDTO(product)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /** Valor total do estoque
-     *
-     * @return 200 - valor total do estoque
-     */
     public ResponseEntity totalStockValue() {
-        var totalValue =  productRepository.totalStockValue();
-
+        var totalValue = productRepository.totalStockValue();
         return ResponseEntity.ok(totalValue);
     }
 
-    /** Atualização de informações de um produtos
-     *
-     * @return 200 - produto com infos atualizadas
-     */
     @Transactional
     public ResponseEntity updateProduct(UpdateProductDTO productDTO) {
-        var product = productRepository.getReferenceById(productDTO.id());
-        product.update(productDTO);
+        var optional = productRepository.findById(productDTO.id());
 
-        return ResponseEntity.ok(new DetailProductDTO(product));
+        if (optional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var product = optional.get();
+        productMapper.updateEntityFromDTO(productDTO, product);
+
+        return ResponseEntity.ok(productMapper.toDetailDTO(product));
     }
 
-    /** Deleção de produto por código
-     *
-     * @return 204 - sem conteúdo/produto é deletado, 404 se não encontrado
-     */
     @Transactional
     public ResponseEntity deleteProduct(String code) {
-        var optional = productRepository.findByCode(code);
+        var optional = productRepository.findByCodeAndActiveTrue(code);
 
         if (optional.isPresent()) {
-            productRepository.delete(optional.get());
+            var product = optional.get();
+            product.deactivate();
             return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.notFound().build();
     }
-
 }

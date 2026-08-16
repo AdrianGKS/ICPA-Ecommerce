@@ -1,7 +1,7 @@
 package com.api.ICPAEcommerce.controllers;
 
 import com.api.ICPAEcommerce.domain.user.User;
-import com.api.ICPAEcommerce.domain.user.mapper.UserMapper;
+import com.api.ICPAEcommerce.domain.user.UserMapper;
 import com.api.ICPAEcommerce.dto.user.UserRegisterDTO;
 import com.api.ICPAEcommerce.dto.user.UserResponseDTO;
 import com.api.ICPAEcommerce.dto.user.UserUpdateDTO;

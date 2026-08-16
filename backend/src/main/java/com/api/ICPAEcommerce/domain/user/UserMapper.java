@@ -1,6 +1,5 @@
-package com.api.ICPAEcommerce.domain.user.mapper;
+package com.api.ICPAEcommerce.domain.user;
 
-import com.api.ICPAEcommerce.domain.user.User;
 import com.api.ICPAEcommerce.dto.user.UserRegisterDTO;
 import com.api.ICPAEcommerce.dto.user.UserResponseDTO;
 import com.api.ICPAEcommerce.dto.user.UserUpdateDTO;

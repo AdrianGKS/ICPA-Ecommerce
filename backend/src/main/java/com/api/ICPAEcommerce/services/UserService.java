@@ -4,7 +4,7 @@ import com.api.ICPAEcommerce.domain.authentication.PasswordResetToken;
 import com.api.ICPAEcommerce.domain.user.User;
 import com.api.ICPAEcommerce.dto.user.UserRegisterDTO;
 import com.api.ICPAEcommerce.dto.user.UserUpdateDTO;
-import com.api.ICPAEcommerce.domain.user.mapper.UserMapper;
+import com.api.ICPAEcommerce.domain.user.UserMapper;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

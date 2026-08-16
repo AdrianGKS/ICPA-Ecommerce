@@ -4,6 +4,7 @@ CREATE SEQUENCE password_reset_tokens_seq INCREMENT BY 50;
 CREATE SEQUENCE orders_seq INCREMENT BY 50;
 CREATE SEQUENCE products_seq INCREMENT BY 50;
 CREATE SEQUENCE file_reference_seq INCREMENT BY 50;
+CREATE SEQUENCE order_items_seq INCREMENT BY 50; -- NOVA SEQUÊNCIA
 
 -- 1. Criação da Tabela Users (Sem chaves estrangeiras)
 CREATE TABLE users (
@@ -49,7 +50,7 @@ CREATE TABLE orders (
                         complement VARCHAR(255)
 );
 
--- 4. Criação da Tabela Products (Depende de Orders)
+-- 4. Criação da Tabela Products (Atualizada, sem dependência de Order)
 CREATE TABLE products (
                           id BIGINT NOT NULL PRIMARY KEY,
                           code VARCHAR(255),
@@ -58,11 +59,22 @@ CREATE TABLE products (
                           price NUMERIC(19, 2),
                           quantity INTEGER,
                           enum_product_category VARCHAR(255),
-                          order_id BIGINT,
-                          CONSTRAINT fk_product_order FOREIGN KEY (order_id) REFERENCES orders(id)
+                          active BOOLEAN NOT NULL DEFAULT TRUE, -- Coluna do Soft Delete
+                          version BIGINT NOT NULL DEFAULT 0     -- Coluna do Optimistic Locking
 );
 
--- 5. Criação da Tabela File_Reference (Depende de Products)
+-- 5. Criação da Tabela Order_Items (A ponte entre Pedido e Produto)
+CREATE TABLE order_items (
+                             id BIGINT NOT NULL PRIMARY KEY,
+                             order_id BIGINT NOT NULL,
+                             product_id BIGINT NOT NULL,
+                             quantity INTEGER NOT NULL,
+                             price_at_time_of_purchase NUMERIC(19, 2) NOT NULL,
+                             CONSTRAINT fk_order_item_order FOREIGN KEY (order_id) REFERENCES orders(id),
+                             CONSTRAINT fk_order_item_product FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+-- 6. Criação da Tabela File_Reference (Depende de Products)
 CREATE TABLE file_reference (
                                 id BIGINT NOT NULL PRIMARY KEY,
                                 product_id BIGINT,
