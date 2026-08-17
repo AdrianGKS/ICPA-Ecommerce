@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,17 +24,28 @@ public class SecurityFilter extends OncePerRequestFilter {
     private UserRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         var tokenJWT = recoverToken(request);
 
         if (tokenJWT != null) {
-            var subject = securityToken.getSubject(tokenJWT);
-            var user = userRepository.findByEmail(subject);
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                // Tenta validar o token
+                var subject = securityToken.getSubject(tokenJWT);
+                var user = userRepository.findByEmail(subject);
+
+                if (user != null) {
+                    var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (RuntimeException ex) {
+                // Se o token for inválido, tem aspas ou expirou, a exceção é capturada aqui.
+                // Não fazemos nada. O SecurityContextHolder continuará vazio (usuário anônimo).
+                // O Spring Security decidirá se a rota requer login ou se é permitAll().
+                System.out.println("Aviso: Token recebido é inválido. Motivo: " + ex.getMessage());
+            }
         }
 
         filterChain.doFilter(request, response);
@@ -43,7 +55,8 @@ public class SecurityFilter extends OncePerRequestFilter {
         var authorizationHeader = request.getHeader("Authorization");
 
         if (authorizationHeader != null) {
-            return authorizationHeader.replace("Bearer ", "");
+            // Remove o "Bearer " e também garante que não há aspas ou espaços extras
+            return authorizationHeader.replace("Bearer ", "").replace("\"", "").trim();
         }
 
         return null;
