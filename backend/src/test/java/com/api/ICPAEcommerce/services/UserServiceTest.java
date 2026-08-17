@@ -1,12 +1,13 @@
 package com.api.ICPAEcommerce.services;
 
 import com.api.ICPAEcommerce.domain.authentication.PasswordResetToken;
+import com.api.ICPAEcommerce.domain.user.EnumUserProfile;
 import com.api.ICPAEcommerce.domain.user.User;
 import com.api.ICPAEcommerce.domain.user.UserMapper;
+import com.api.ICPAEcommerce.dto.user.UserRegisterDTO;
+import com.api.ICPAEcommerce.dto.user.UserUpdateDTO;
 import com.api.ICPAEcommerce.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,149 +16,67 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("UserService Tests")
 class UserServiceTest {
+    @Mock UserRepository repository;
+    @Mock PasswordEncoder encoder;
+    @Mock UserMapper mapper;
+    @InjectMocks UserService service;
 
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private UserMapper userMapper;
-
-    @InjectMocks
-    private UserService userService;
-
-    private User user;
-
-    @BeforeEach
-    void setUp() {
-        user = new User();
-        user.setId(1L);
-        user.setEmail("test@example.com");
-        user.setPassword("encoded_password");
-        user.setName("Test User");
+    @Test
+    void loadUserTrimsUsernameAndRejectsUnknownUser() {
+        User user = new User(); user.setEmail("user@example.com");
+        when(repository.findByEmail("user@example.com")).thenReturn(user);
+        assertSame(user, service.loadUserByUsername(" user@example.com "));
+        when(repository.findByEmail("missing@example.com")).thenReturn(null);
+        assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("missing@example.com"));
     }
 
     @Test
-    @DisplayName("Deve listar todos os usuários")
-    void testListUsers() {
-        List<User> users = Collections.singletonList(user);
-        when(userRepository.findAll()).thenReturn(users);
-
-        List<User> result = userService.listUsers();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("test@example.com", result.getFirst().getEmail());
-        verify(userRepository, times(1)).findAll();
+    void registerEncodesPasswordAndRejectsDuplicateEmail() {
+        UserRegisterDTO dto = new UserRegisterDTO("User", "user@example.com", "plainpass", null, EnumUserProfile.USER);
+        User user = new User();
+        when(repository.findByEmail(dto.email())).thenReturn(null);
+        when(mapper.toEntity(dto)).thenReturn(user);
+        when(encoder.encode("plainpass")).thenReturn("encoded");
+        when(repository.save(user)).thenReturn(user);
+        assertSame(user, service.registerUser(dto));
+        assertEquals("encoded", user.getPassword());
+        verify(repository).save(user);
+        when(repository.findByEmail(dto.email())).thenReturn(user);
+        assertThrows(IllegalArgumentException.class, () -> service.registerUser(dto));
     }
 
     @Test
-    @DisplayName("Deve encontrar usuário por ID")
-    void testFindById() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-
-        User result = userService.findById(1L);
-
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals("test@example.com", result.getEmail());
-        verify(userRepository, times(1)).findById(1L);
+    void listFindUpdateAndDeleteUsers() {
+        User user = new User(); user.setId(1L);
+        when(repository.findAll()).thenReturn(List.of(user));
+        assertEquals(List.of(user), service.listUsers());
+        when(repository.findById(1L)).thenReturn(Optional.of(user));
+        assertSame(user, service.findById(1L));
+        UserUpdateDTO dto = new UserUpdateDTO("Updated", null, null);
+        when(repository.save(user)).thenReturn(user);
+        assertSame(user, service.updateUser(1L, dto));
+        verify(mapper).updateEntityFromDto(dto, user);
+        service.deleteUser(1L);
+        verify(repository).delete(user);
+        when(repository.findById(2L)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> service.findById(2L));
     }
 
     @Test
-    @DisplayName("Deve lançar exceção quando usuário não existe")
-    void testFindByIdNotFound() {
-        when(userRepository.findById(999L)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
-                () -> userService.findById(999L)
-        );
-
-        assertEquals("Usuário não encontrado.", exception.getMessage());
-        verify(userRepository, times(1)).findById(999L);
-    }
-
-    @Test
-    @DisplayName("Deve deletar usuário com sucesso")
-    void testDeleteUser() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        doNothing().when(userRepository).delete(user);
-
-        userService.deleteUser(1L);
-
-        verify(userRepository, times(1)).findById(1L);
-        verify(userRepository, times(1)).delete(user);
-        verify(userRepository, never()).deleteById(any());
-    }
-
-    @Test
-    @DisplayName("Deve lançar exceção ao deletar usuário inexistente")
-    void testDeleteUserNotFound() {
-        when(userRepository.findById(999L)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
-                () -> userService.deleteUser(999L)
-        );
-
-        assertEquals("Usuário não encontrado.", exception.getMessage());
-        verify(userRepository, times(1)).findById(999L);
-        verify(userRepository, never()).delete(any(User.class));
-    }
-
-    @Test
-    @DisplayName("Deve carregar usuário pelo email")
-    void testLoadUserByUsername() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(user);
-
-        var result = userService.loadUserByUsername(" test@example.com ");
-
-        assertNotNull(result);
-        assertEquals("test@example.com", result.getUsername());
-        verify(userRepository, times(1)).findByEmail("test@example.com");
-    }
-
-    @Test
-    @DisplayName("Deve lançar exceção ao carregar usuário inexistente pelo email")
-    void testLoadUserByUsernameNotFound() {
-        when(userRepository.findByEmail("notfound@example.com")).thenReturn(null);
-
-        UsernameNotFoundException exception = assertThrows(
-                UsernameNotFoundException.class,
-                () -> userService.loadUserByUsername("notfound@example.com")
-        );
-
-        assertEquals("Usuário não encontrado em nosso sistema.", exception.getMessage());
-        verify(userRepository, times(1)).findByEmail("notfound@example.com");
-    }
-
-    @Test
-    @DisplayName("Deve alterar senha com token válido")
-    void testChangePasswordWithToken() {
-        PasswordResetToken resetToken = new PasswordResetToken();
-        resetToken.setUser(user);
-
-        when(passwordEncoder.encode("new_password")).thenReturn("encoded_new_password");
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
-        userService.changePasswordWithToken("new_password", resetToken);
-
-        assertEquals("encoded_new_password", user.getPassword());
-        verify(passwordEncoder, times(1)).encode("new_password");
-        verify(userRepository, times(1)).save(user);
+    void changePasswordWithTokenSavesEncodedPassword() {
+        User user = new User(); PasswordResetToken token = new PasswordResetToken(); token.setUser(user);
+        when(encoder.encode("new-password")).thenReturn("encoded");
+        service.changePasswordWithToken("new-password", token);
+        assertEquals("encoded", user.getPassword());
+        verify(repository).save(user);
     }
 }

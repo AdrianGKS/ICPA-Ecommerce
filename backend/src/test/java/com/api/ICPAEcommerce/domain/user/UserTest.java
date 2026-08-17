@@ -2,13 +2,13 @@ package com.api.ICPAEcommerce.domain.user;
 
 import com.api.ICPAEcommerce.domain.address.Address;
 import com.api.ICPAEcommerce.dto.address.AddressDTO;
-import com.api.ICPAEcommerce.dto.user.UserRegisterDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -90,9 +90,9 @@ class UserTest {
 
         assertEquals(2, authorities.size());
         assertTrue(authorities.stream()
-            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")));
+            .anyMatch(auth -> Objects.equals(auth.getAuthority(), "ROLE_ADMIN")));
         assertTrue(authorities.stream()
-            .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER")));
+            .anyMatch(auth -> Objects.equals(auth.getAuthority(), "ROLE_USER")));
     }
 
     @Test
@@ -105,9 +105,9 @@ class UserTest {
 
         assertEquals(1, authorities.size());
         assertTrue(authorities.stream()
-            .anyMatch(auth -> auth.getAuthority().equals("ROLE_USER")));
+            .anyMatch(auth -> Objects.equals(auth.getAuthority(), "ROLE_USER")));
         assertFalse(authorities.stream()
-            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")));
+            .anyMatch(auth -> Objects.equals(auth.getAuthority(), "ROLE_ADMIN")));
     }
 
     @Test

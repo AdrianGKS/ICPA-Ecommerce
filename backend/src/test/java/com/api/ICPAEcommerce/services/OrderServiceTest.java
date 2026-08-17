@@ -1,21 +1,22 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.order.EnumOrderStatus;
-import com.api.ICPAEcommerce.domain.order.Order;
-import com.api.ICPAEcommerce.dto.order.OrderDTO;
+import com.api.ICPAEcommerce.domain.address.Address;
+import com.api.ICPAEcommerce.domain.order.*;
+import com.api.ICPAEcommerce.domain.orderItem.OrderItem;
+import com.api.ICPAEcommerce.domain.product.Product;
+import com.api.ICPAEcommerce.dto.order.OrderDetailDTO;
+import com.api.ICPAEcommerce.dto.order.OrderRequestDTO;
+import com.api.ICPAEcommerce.dto.orderItem.OrderItemRequestDTO;
 import com.api.ICPAEcommerce.repositories.OrderRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import com.api.ICPAEcommerce.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import java.time.OffsetDateTime;
-import java.util.Collections;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,113 +25,101 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("OrderService Tests")
 class OrderServiceTest {
+    @Mock OrderRepository orderRepository;
+    @Mock ProductRepository productRepository;
+    @Mock OrderMapper orderMapper;
+    @InjectMocks OrderService service;
 
-    @Mock
-    private OrderRepository orderRepository;
+    private final Address address = new Address("Street", "1", "City", "Center", "SP", "00000-000", null);
 
-    @InjectMocks
-    private OrderService orderService;
-
-    private Order order;
-    private OrderDTO orderDTO;
-
-    @BeforeEach
-    void setUp() {
-        order = new Order();
-        order.setId(1L);
-        order.setClientEmail("customer@example.com");
-        order.setOrderPrice(100.0);
-        order.setStatus(EnumOrderStatus.PENDING_PAYMENT);
-        order.setOrderDate(OffsetDateTime.now());
-
-        orderDTO = new OrderDTO(
-            1L,
-            null,
-            null,
-            EnumOrderStatus.PROCESSING,
-            "customer@example.com",
-            OffsetDateTime.now(),
-            100.0,
-            null
-        );
+    private OrderRequestDTO request(int quantity) {
+        return new OrderRequestDTO(List.of(new OrderItemRequestDTO(1L, quantity)), address,
+                "buyer@example.com", EnumPaymenType.PIX);
     }
 
     @Test
-    @DisplayName("Deve listar todos os pedidos")
-    void testListOrders() {
-        List<Order> orders = Collections.singletonList(order);
-        when(orderRepository.findAll()).thenReturn(orders);
+    void saveOrderCalculatesTotalSnapshotsPriceAndDecrementsStock() {
+        Product product = product(10, "25.50");
+        OrderDetailDTO detail = new OrderDetailDTO(1L, "buyer@example.com", null, 51.0,
+                EnumPaymenType.PIX, EnumOrderStatus.PENDING_PAYMENT, address, List.of());
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        when(orderMapper.toDetailDTO(any(Order.class))).thenReturn(detail);
 
-        List<Order> result = orderService.listOrders();
+        var response = service.saveOrder(request(2));
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("customer@example.com", result.getFirst().getClientEmail());
-        verify(orderRepository, times(1)).findAll();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Order saved = captureSavedOrder();
+        assertEquals(51.0, saved.getOrderPrice());
+        assertEquals(EnumOrderStatus.PENDING_PAYMENT, saved.getStatus());
+        assertEquals(8, product.getQuantity());
+        assertEquals(product, saved.getItems().getFirst().getProduct());
+        assertEquals(new BigDecimal("25.50"), saved.getItems().getFirst().getPriceAtTimeOfPurchase());
     }
 
     @Test
-    @DisplayName("Deve encontrar pedido por ID")
-    void testFindById() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+    void saveOrderRejectsInactiveOrInsufficientStock() {
+        Product product = product(1, "10.00");
+        product.setActive(false);
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        Optional<Order> result = orderService.findById(1L);
+        var response = service.saveOrder(request(2));
 
-        assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getId());
-        verify(orderRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    @DisplayName("Deve retornar empty quando pedido não existe")
-    void testFindByIdNotFound() {
-        when(orderRepository.findById(999L)).thenReturn(Optional.empty());
-
-        Optional<Order> result = orderService.findById(999L);
-
-        assertFalse(result.isPresent());
-        verify(orderRepository, times(1)).findById(999L);
-    }
-
-    @Test
-    @DisplayName("Deve atualizar status do pedido com sucesso")
-    void testUpdateOrderSuccess() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(orderRepository.save(any(Order.class))).thenReturn(order);
-
-        ResponseEntity<?> result = orderService.updateOrder(1L, orderDTO);
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-        verify(orderRepository, times(1)).findById(1L);
-        verify(orderRepository, times(1)).save(any(Order.class));
-    }
-
-    @Test
-    @DisplayName("Deve retornar NOT_FOUND quando pedido não existe para update")
-    void testUpdateOrderNotFound() {
-        when(orderRepository.findById(999L)).thenReturn(Optional.empty());
-
-        ResponseEntity<?> result = orderService.updateOrder(999L, orderDTO);
-
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        verify(orderRepository, times(1)).findById(999L);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         verify(orderRepository, never()).save(any());
     }
 
     @Test
-    @DisplayName("Deve criar novo pedido")
-    void testSaveOrder() {
-        when(orderRepository.save(any(Order.class))).thenReturn(order);
+    void saveOrderThrowsWhenProductDoesNotExist() {
+        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> service.saveOrder(request(1)));
+        verify(orderRepository, never()).save(any());
+    }
 
-        ResponseEntity<?> result = orderService.saveOrder(orderDTO);
+    @Test
+    void listAndDetailOrdersMapEntities() {
+        Order order = new Order();
+        OrderDetailDTO detail = new OrderDetailDTO(1L, "buyer@example.com", null, 1.0,
+                EnumPaymenType.PIX, EnumOrderStatus.PENDING_PAYMENT, address, List.of());
+        when(orderRepository.findAll()).thenReturn(List.of(order));
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderMapper.toDetailDTO(order)).thenReturn(detail);
 
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-        verify(orderRepository, times(1)).save(any(Order.class));
+        assertEquals(List.of(detail), service.listOrders().getBody());
+        assertEquals(detail, service.detailOrder(1L).getBody());
+        assertEquals(HttpStatus.NOT_FOUND, service.detailOrder(2L).getStatusCode());
+    }
+
+    @Test
+    void cancelRestoresStockOnlyOnce() {
+        Product product = product(3, "10.00");
+        OrderItem item = new OrderItem(); item.setProduct(product); item.setQuantity(2);
+        Order order = new Order(); order.setStatus(EnumOrderStatus.PROCESSING); order.setItems(List.of(item));
+        OrderDetailDTO detail = new OrderDetailDTO(1L, null, null, null, null, EnumOrderStatus.CANCELED, null, List.of());
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderMapper.toDetailDTO(order)).thenReturn(detail);
+
+        service.updateOrderStatus(1L, EnumOrderStatus.CANCELED);
+        service.updateOrderStatus(1L, EnumOrderStatus.CANCELED);
+
+        assertEquals(5, product.getQuantity());
+        assertEquals(EnumOrderStatus.CANCELED, order.getStatus());
+    }
+
+    @Test
+    void updateStatusReturnsNotFound() {
+        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
+        assertEquals(HttpStatus.NOT_FOUND, service.updateOrderStatus(99L, EnumOrderStatus.PROCESSING).getStatusCode());
+    }
+
+    private Product product(int quantity, String price) {
+        Product p = new Product(); p.setId(1L); p.setName("Product"); p.setQuantity(quantity);
+        p.setPrice(new BigDecimal(price)); p.setActive(true); return p;
+    }
+
+    private Order captureSavedOrder() {
+        var captor = org.mockito.ArgumentCaptor.forClass(Order.class);
+        verify(orderRepository).save(captor.capture());
+        return captor.getValue();
     }
 }
-
-

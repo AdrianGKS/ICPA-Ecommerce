@@ -1,153 +1,97 @@
 package com.api.ICPAEcommerce.services;
 
-import com.api.ICPAEcommerce.domain.product.EnumProductCategory;
-import com.api.ICPAEcommerce.domain.product.Product;
-import com.api.ICPAEcommerce.dto.product.ProductDTO;
+import com.api.ICPAEcommerce.domain.product.*;
+import com.api.ICPAEcommerce.domain.product.ProductMapper;
+import com.api.ICPAEcommerce.dto.product.*;
 import com.api.ICPAEcommerce.repositories.ProductRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("ProductService Tests")
 class ProductServiceTest {
+    @Mock ProductRepository repository;
+    @Mock ProductMapper mapper;
+    @InjectMocks ProductService service;
 
-    @Mock
-    private ProductRepository productRepository;
-
-    @InjectMocks
-    private ProductService productService;
-
-    private Product product;
-    private ProductDTO productDTO;
-
-    @BeforeEach
-    void setUp() {
-        product = new Product();
-        product.setId(1L);
-        product.setCode("PROD001");
-        product.setName("Test Product");
-        product.setDescription("Test Description");
-        product.setPrice(new BigDecimal("50.00"));
-        product.setQuantity(10);
-        product.setEnumProductCategory(EnumProductCategory.BOOKS);
-
-        productDTO = new ProductDTO(
-            "PROD001",
-            "Test Product",
-            "Test Description",
-            new BigDecimal("50.00"),
-            10,
-            EnumProductCategory.BOOKS
-        );
+    private Product product() {
+        Product p = new Product(); p.setId(1L); p.setCode("P-1"); p.setName("Book");
+        p.setPrice(new BigDecimal("12.00")); p.setQuantity(3); p.setActive(true); return p;
     }
 
     @Test
-    @DisplayName("Deve registrar novo produto com sucesso")
-    void testRegisterProductSuccess() {
-        when(productRepository.save(any(Product.class))).thenReturn(product);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-        ResponseEntity<?> result = productService.register(productDTO, builder);
-
-        assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertNotNull(result.getBody());
-        verify(productRepository, times(1)).save(any(Product.class));
+    void registerRejectsDuplicateCode() {
+        ProductDTO dto = new ProductDTO("P-1", "Book", "Description", new BigDecimal("12.00"), 3, EnumProductCategory.BOOKS);
+        when(repository.existsByCode("P-1")).thenReturn(true);
+        assertEquals(HttpStatus.BAD_REQUEST, service.register(dto, UriComponentsBuilder.newInstance()).getStatusCode());
+        verify(repository, never()).save(any());
     }
 
     @Test
-    @DisplayName("Deve listar produtos por código com sucesso")
-    void testListProductByCodeSuccess() {
-        when(productRepository.findByCode("PROD001")).thenReturn(Optional.of(product));
-
-        ResponseEntity<?> result = productService.listProductByCode("PROD001");
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-        verify(productRepository, times(1)).findByCode("PROD001");
+    void registerCreatesProductAndLocation() {
+        ProductDTO dto = new ProductDTO("P-1", "Book", "Description", new BigDecimal("12.00"), 3, EnumProductCategory.BOOKS);
+        Product product = product();
+        when(mapper.toEntity(dto)).thenReturn(product);
+        when(mapper.toDetailDTO(product)).thenReturn(mock(DetailProductDTO.class));
+        var response = service.register(dto, UriComponentsBuilder.newInstance());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertTrue(Objects.requireNonNull(response.getHeaders().getLocation()).toString().contains("P-1"));
+        verify(repository).save(product);
     }
 
     @Test
-    @DisplayName("Deve retornar NOT_FOUND quando produto não existe")
-    void testListProductByCodeNotFound() {
-        when(productRepository.findByCode("INVALID")).thenReturn(Optional.empty());
-
-        ResponseEntity<?> result = productService.listProductByCode("INVALID");
-
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        verify(productRepository, times(1)).findByCode("INVALID");
+    void listMethodsUseActiveRepositoryQueries() {
+        Pageable pageable = PageRequest.of(0, 10); Page<Product> page = new PageImpl<>(List.of(product()));
+        when(repository.findAllByActiveTrue(pageable)).thenReturn(page);
+        when(repository.findByNameContainingIgnoreCaseAndActiveTrue("book", pageable)).thenReturn(page);
+        when(repository.findByEnumProductCategoryAndActiveTrue(EnumProductCategory.BOOKS, pageable)).thenReturn(page);
+        when(mapper.toListDTO(any())).thenReturn(mock(ListProductDTO.class));
+        assertEquals(1, Objects.requireNonNull(service.listProducts(pageable).getBody()).getTotalElements());
+        assertEquals(1, Objects.requireNonNull(service.listProductsByName("book", pageable).getBody()).getTotalElements());
+        assertEquals(1, Objects.requireNonNull(service.listProductsByCategory(EnumProductCategory.BOOKS, pageable).getBody()).getTotalElements());
     }
 
     @Test
-    @DisplayName("Deve deletar produto por código com sucesso")
-    void testDeleteProductSuccess() {
-        when(productRepository.findByCode("PROD001")).thenReturn(Optional.of(product));
-        doNothing().when(productRepository).delete(any(Product.class));
-
-        ResponseEntity<?> result = productService.deleteProduct("PROD001");
-
-        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
-        verify(productRepository, times(1)).findByCode("PROD001");
-        verify(productRepository, times(1)).delete(any(Product.class));
+    void codeLookupAndDeleteOnlyUseActiveProducts() {
+        Product product = product();
+        when(repository.findByCodeAndActiveTrue("P-1")).thenReturn(Optional.of(product));
+        when(mapper.toDetailDTO(product)).thenReturn(mock(DetailProductDTO.class));
+        assertEquals(HttpStatus.OK, service.listProductByCode("P-1").getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, service.deleteProduct("P-1").getStatusCode());
+        assertFalse(product.getActive());
+        when(repository.findByCodeAndActiveTrue("missing")).thenReturn(Optional.empty());
+        assertEquals(HttpStatus.NOT_FOUND, service.deleteProduct("missing").getStatusCode());
     }
 
     @Test
-    @DisplayName("Deve retornar NOT_FOUND ao deletar produto inexistente")
-    void testDeleteProductNotFound() {
-        when(productRepository.findByCode("INVALID")).thenReturn(Optional.empty());
-
-        ResponseEntity<?> result = productService.deleteProduct("INVALID");
-
-        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
-        verify(productRepository, times(1)).findByCode("INVALID");
-        verify(productRepository, never()).delete(any());
+    void updateProductReturnsNotFoundOrUpdatesEntity() {
+        UpdateProductDTO dto = new UpdateProductDTO(1L, "P-2", "New", "Desc", new BigDecimal("20.00"), 4);
+        Product product = product();
+        when(repository.findById(1L)).thenReturn(Optional.of(product));
+        when(mapper.toDetailDTO(product)).thenReturn(mock(DetailProductDTO.class));
+        assertEquals(HttpStatus.OK, service.updateProduct(dto).getStatusCode());
+        verify(mapper).updateEntityFromDTO(dto, product);
+        when(repository.findById(2L)).thenReturn(Optional.empty());
+        assertEquals(HttpStatus.NOT_FOUND, service.updateProduct(new UpdateProductDTO(2L, null, null, null, null, null)).getStatusCode());
     }
 
     @Test
-    @DisplayName("Deve listar todos os produtos com paginação")
-    void testListProducts() {
-        Page<Product> page = new PageImpl<>(Collections.singletonList(product));
-        when(productRepository.findAll(any(Pageable.class))).thenReturn(page);
-
-        ResponseEntity<?> result = productService.listProducts(mock(Pageable.class));
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-        verify(productRepository, times(1)).findAll(any(Pageable.class));
-    }
-
-    @Test
-    @DisplayName("Deve retornar valor total do estoque")
-    void testTotalStockValue() {
-        when(productRepository.totalStockValue()).thenReturn(new BigDecimal("500.00"));
-
-        ResponseEntity<?> result = productService.totalStockValue();
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(new BigDecimal("500.00"), result.getBody());
-        verify(productRepository, times(1)).totalStockValue();
+    void totalStockValueIsReturned() {
+        when(repository.totalStockValue()).thenReturn(new BigDecimal("36.00"));
+        assertEquals(new BigDecimal("36.00"), service.totalStockValue().getBody());
     }
 }
-
-
-
-

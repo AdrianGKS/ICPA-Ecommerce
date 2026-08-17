@@ -1,6 +1,5 @@
-package com.api.ICPAEcommerce.mappers;
+package com.api.ICPAEcommerce.domain.product;
 
-import com.api.ICPAEcommerce.domain.product.Product;
 import com.api.ICPAEcommerce.dto.product.DetailProductDTO;
 import com.api.ICPAEcommerce.dto.product.ListProductDTO;
 import com.api.ICPAEcommerce.dto.product.ProductDTO;
